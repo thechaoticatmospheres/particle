@@ -25,18 +25,20 @@ describe("four-element progression", () => {
       [...new Set(sim.cells)].every((id) => !id || starters.includes(id)),
     ).toBe(true);
   });
-  it("reaches all 27 palette items through the actual combiner from four starters", () => {
+  it("reaches all 87 palette items through the actual combiner from four starters", () => {
     const known = restoreProgress(null);
-    for (let round = 0; round < 27; round++) {
+    for (let round = 0; round < allItems.length; round++) {
+      const before = known.size;
       const keys = [...known];
       for (const a of keys)
         for (const b of keys) {
           for (const result of combine(itemFromKey(a), itemFromKey(b)).results)
             known.add(itemKey(result));
         }
+      if (known.size === before) break;
     }
     expect([...known].sort()).toEqual(allItems.map(itemKey).sort());
-    expect(known.size).toBe(27);
+    expect(known.size).toBe(87);
   });
   it("has a usable hint for every locked material and species", () => {
     for (const item of allItems) {

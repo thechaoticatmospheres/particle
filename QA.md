@@ -4,11 +4,20 @@
 
 Run `npm test` for the simulation and ecology suites. They cover particle movement, dissolution/saturation, salt conservation, modifier transport, phase changes, burning, wet fuels, soil hydration, nutrients, pollution, acidity, corrosion, electrical conduction, plant lifecycles, human needs, fish habitats, mortality, and atomic save validation.
 
-Final result: **86 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 27 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
+Final result: **102 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 87 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
+
+Expansion tests cover all 84 stable material IDs, existing progression preservation, phase changes, finite filtering and neutralization, nutrient dissolution, absorption, rust, conductivity, pollution, soap foam, oxygen/fire suppression, hydrogen explosions, wet-fuel protection, aquatic growth salinity requirements, and deterministic save continuation with every material present.
 
 The suites also verify version 1 save migration, exact deterministic continuation after restoring version 2, compressed save size, and a 1,000-tick full-size living-world run. `npm run build` checks TypeScript and produces a Vite production build.
 
 ## Browser verification
+
+### Material expansion
+
+- The existing browser retained 13 discoveries and showed the expanded 87-item palette.
+- Clicking locked Clay showed Mud + Sand without granting it. Combining those materials unlocked Clay; dragging Clay and Fire into the combiner immediately unlocked Brick.
+- Dragged the Brick result into the paused world and inspected the placed blob: Brick, 20°C, with zero salt, pollution, and acidity.
+- Reviewed the expanded palette screenshot: the playfield and combiner remain visible while the longer material list scrolls.
 
 ### Four-element progression
 

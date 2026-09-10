@@ -242,7 +242,7 @@ export class Simulation {
           else {
             this.transform(
               i,
-              id === E.Steam ? E.Water : 0,
+              id === E.Steam ? E.Water : (material[id].expiresTo ?? 0),
               id === E.Steam
                 ? { moisture: 100, salinity: 0, pollution: 0, acidity: 0 }
                 : {},
@@ -268,7 +268,8 @@ export class Simulation {
         }
         if (
           (id === E.Lava && this.tick % 3 !== 0) ||
-          (id === E.Mud && this.tick % 4 !== 0)
+          (id === E.Mud && this.tick % 4 !== 0) ||
+          this.tick % (material[id].viscosity ?? 1) !== 0
         )
           continue;
         if (

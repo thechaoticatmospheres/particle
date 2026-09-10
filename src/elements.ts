@@ -1,3 +1,6 @@
+import { E } from "./ids";
+export { E } from "./ids";
+import { expandedElements } from "./expansion";
 export type Matter = "powder" | "liquid" | "solid" | "gas" | "energy";
 export type Category = "Nature" | "Liquids" | "Solids" | "Energy" | "Gases";
 export interface Element {
@@ -12,33 +15,6 @@ export interface Element {
   starter?: boolean;
   lifetime?: number;
 }
-export const E = {
-  Empty: 0,
-  Sand: 1,
-  Water: 2,
-  Stone: 3,
-  Soil: 4,
-  Wood: 5,
-  Seed: 6,
-  Fire: 7,
-  Lava: 8,
-  Oil: 9,
-  Ice: 10,
-  Metal: 11,
-  Salt: 12,
-  Steam: 13,
-  Glass: 14,
-  Mud: 15,
-  Plant: 16,
-  Ash: 17,
-  Smoke: 18,
-  Obsidian: 19,
-  Snow: 20,
-  Acid: 21,
-  Crystal: 22,
-  Gunpowder: 23,
-  Spark: 24,
-} as const;
 export const elements: Element[] = [
   {
     id: 1,
@@ -304,6 +280,7 @@ export const elements: Element[] = [
     description: "A fleeting flash. Ignites oil, wood, plants, and gunpowder.",
   },
 ];
+elements.push(...expandedElements);
 export const byId = new Map(elements.map((e) => [e.id, e]));
 export interface Recipe {
   a: number;

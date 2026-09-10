@@ -1,4 +1,5 @@
 import { E, elements } from "./elements";
+import { expandedTraits } from "./expansion";
 
 /** Capabilities, not pairwise recipes. New materials opt into shared systems here. */
 export interface MaterialTraits {
@@ -16,6 +17,23 @@ export interface MaterialTraits {
   defaultTemperature: number;
   defaultMoisture: number;
   defaultFertility: number;
+  defaultPollution?: number;
+  viscosity?: number;
+  heatTransition?: { at: number; to: number };
+  coldTransition?: { at: number; to: number };
+  burnProduct?: number;
+  expiresTo?: number;
+  rustRate?: number;
+  polluting?: number;
+  filter?: boolean;
+  neutralizer?: boolean;
+  waterProduct?: number;
+  waterPollution?: number;
+  explosive?: number;
+  oxidizer?: boolean;
+  suppressant?: boolean;
+  saltTolerance?: number;
+  growth?: { substrate: "soil" | "water"; minSalt: number; maxSalt: number };
 }
 const defaults: MaterialTraits = {
   conductivity: 0.1,
@@ -124,6 +142,23 @@ export const material: MaterialTraits[] = Array.from({ length: 256 }, () => ({
 }));
 for (const element of elements)
   material[element.id] = { ...defaults, ...overrides[element.id] };
+for (const entry of expandedTraits)
+  material[entry.id] = { ...material[entry.base], ...entry.traits };
+export const hasExtendedContact = material.map(
+  (t) =>
+    !!(
+      t.filter ||
+      t.neutralizer ||
+      t.polluting ||
+      t.waterProduct ||
+      t.suppressant ||
+      t.oxidizer ||
+      t.rustRate
+    ),
+);
+export const hasExtendedStep = material.map(
+  (t) => !!(t.heatTransition || t.coldTransition || t.growth),
+);
 
 /** Species use the same tolerances; adding another aquatic species needs only data. */
 export const habitats = {

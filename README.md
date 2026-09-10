@@ -1,17 +1,17 @@
 # Particle — living sandbox
 
-A single-player particle sandbox built with **Phaser 3, TypeScript, and Vite**. Start with **Sand, Water, Stone, and Fire** and unlock 20 more materials, humans, freshwater fish, and saltwater fish through the combiner.
+A single-player particle sandbox built with **Phaser 3, TypeScript, and Vite**. Start with **Sand, Water, Stone, and Fire** and unlock **80 more materials**, humans, freshwater fish, and saltwater fish through the combiner.
 
 ## Discovery progression
 
-Only four items are initially available. All 23 others require combining two unlocked items; the complete graph is verified by tests against the actual combiner. Examples:
+Only four items are initially available. All 83 others require combining two unlocked items; the complete graph is verified by tests against the actual combiner. Examples:
 
 - Stone + Sand → Soil; Soil + Water → Mud; Soil + Mud → Seed.
 - Seed + Water → Plant; Plant + Plant → Wood.
 - Plant + Water → Freshwater fish; Freshwater fish + Salt → Saltwater fish.
 - Mud + Plant → Human.
 
-Click a locked item or open Discoveries for its recipe. Natural world reactions do not unlock palette items. Progress uses a new versioned browser record; legacy saves can restore their world but cannot grant old starter unlocks. The Living lab preset becomes available after unlocking all 27 items.
+Click a locked item or open Discoveries for its recipe. Natural world reactions do not unlock palette items. Existing version 3 discoveries are preserved; the 60 new materials start locked. Older legacy saves can restore their world but cannot grant old starter unlocks. The Living lab preset becomes available after unlocking all 87 items.
 
 ## Hosting
 
@@ -30,7 +30,7 @@ Open the local URL from Vite. `npm run preview` serves the production build.
 
 ## Try the ecology pass
 
-1. After discovering all 27 items, choose **World → Living lab**. The left aquarium contains freshwater fish; the right contains saltwater fish. Seeds and humans occupy the ground between them.
+1. After discovering all 87 items, choose **World → Living lab**. The left aquarium contains freshwater fish; the right contains saltwater fish. Seeds and humans occupy the ground between them.
 2. Select the **Salinity** overlay to see the difference. Use **Inspect (I)** on particles and creatures to read their conditions and needs.
 3. Drop **Salt** into water. It dissolves and spreads as a property of Water. Saltwater fish need salinity 12–70; freshwater fish need 0–9; humans drink safe water at 0–7.
 4. Place **Seed** on moist **Soil**. Seedlings grow into branching, woody plants and eventually release seeds. Try fresh water, fertilizer, salt, or fire near their roots.
@@ -51,30 +51,37 @@ The **Field guide** explains the environmental systems and lists all 20 modifier
 
 ## Material library
 
-The 24 materials are Sand, Water, Stone, Soil, Wood, Seed, Fire, Lava, Oil, Ice, Metal, Salt, Steam, Glass, Mud, Plant, Ash, Smoke, Obsidian, Snow, Acid, Crystal, Gunpowder, and Spark.
+The library contains **84 materials** plus three life forms. The original 24 are joined by 60 materials across minerals and gems, metals and alloys, growing organics, absorbent fibers, fuels, viscous liquids, and reactive gases. See `src/expansion.ts` for every material, capability, and discovery pair.
 
-There are **4 starter materials** and **23 unlockable palette items**, including life. The combiner has 13 physical material previews, 13 additional discovery recipes, and 20 modifier previews. Discovery recipes are abstract game rules, separate from live physical reactions. For example, combining Ash + Salt unlocks Gunpowder, while ash and salt touching in the world still behave as nutrients and dissolved minerals.
+There are **4 starter materials** and **83 unlockable palette items**, including life. The combiner has 13 physical material previews, 73 additional discovery recipes, and 20 modifier previews. Discovery recipes are abstract game rules, separate from live physical reactions. For example, combining Ash + Salt unlocks Gunpowder, while ash and salt touching in the world still behave as nutrients and dissolved minerals.
+
+New discovery chains include Mud + Sand → Clay, Clay + Fire → Brick; Wood + Stone → Coal, Metal + Stone → Iron, Iron + Coal → Steel; and Plant + Steam → Algae, Algae + Salt → Kelp. Every new item remains reachable from the four starters.
+
+Physical capabilities include wax melting and solidifying, clay firing, metal melting, alcohol evaporation and condensation, dry ice sublimation, charcoal filtering pollution with finite capacity, soap foaming, fertilizer dissolving into nutrients, iron rusting faster near salty water, mercury polluting water, oxygen supporting ignition, and carbon dioxide suppressing fire. Moss and fungus spread near moist fertile soil; algae and kelp require nutrient-bearing water within their salinity range. Existing heat, moisture, combustion, acidity, electricity, and habitat systems apply through shared traits.
 
 ## Architecture and extension points
 
-| File                 | Responsibility                                                                                                                         |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/elements.ts`    | Stable material IDs, descriptions, palette groups, and material discovery recipes                                                      |
-| `src/materials.ts`   | Shared capabilities: absorbency, conductivity, fuel, ignition point, solubility, resistance, soil/water traits, and species tolerances |
-| `src/modifiers.ts`   | Typed arrays for particle properties; initialization, transport, snapshots, and compact run-length storage                             |
-| `src/environment.ts` | Heat exchange, diffusion, absorption, dissolution, phases, combustion, corrosion, neutralization, and electrical propagation           |
-| `src/life.ts`        | Rooted plant lifecycle, human needs and movement, fish habitat checks, death, and entity validation                                    |
-| `src/simulation.ts`  | Seeded particle movement, terrain, world orchestration, shared state, and versioned persistence                                        |
-| `src/experiments.ts` | Modifier experiments and explanatory field notes                                                                                       |
-| `src/scene.ts`       | Phaser rendering, life sprites, overlays, and mapping pointer input to world coordinates                                               |
-| `src/main.ts`        | DOM interface, local saves, inspectors, lab brushes, and discovery progression                                                         |
-| `src/ui.ts`          | Compact palette, combiner, world menus, and canvas toolbar markup |
-| `src/palette-drag.ts` | Shared pointer drag handling, preview, cancellation, and keyboard alternative |
-| `src/combiner.ts`    | Reusable combination previews, modifier inheritance, and canvas drop mapping |
-| `src/crafting.ts`    | Discovery graph, shared material/life keys, and versioned progression |
-| `src/starting-world.ts` | Starting terrain restricted to the four base materials |
+| File                        | Responsibility                                                                                                                         |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/ids.ts`                | Stable byte IDs for saved materials                                                                                                    |
+| `src/elements.ts`           | Original descriptions, palette groups, physical recipes, and combined registry                                                         |
+| `src/expansion.ts`          | Added material definitions, inherited capabilities, and discovery pairs                                                                |
+| `src/material-behaviors.ts` | Optional filtering, neutralization, rusting, phase transitions, and growth                                                             |
+| `src/materials.ts`          | Shared capabilities: absorbency, conductivity, fuel, ignition point, solubility, resistance, soil/water traits, and species tolerances |
+| `src/modifiers.ts`          | Typed arrays for particle properties; initialization, transport, snapshots, and compact run-length storage                             |
+| `src/environment.ts`        | Heat exchange, diffusion, absorption, dissolution, phases, combustion, corrosion, neutralization, and electrical propagation           |
+| `src/life.ts`               | Rooted plant lifecycle, human needs and movement, fish habitat checks, death, and entity validation                                    |
+| `src/simulation.ts`         | Seeded particle movement, terrain, world orchestration, shared state, and versioned persistence                                        |
+| `src/experiments.ts`        | Modifier experiments and explanatory field notes                                                                                       |
+| `src/scene.ts`              | Phaser rendering, life sprites, overlays, and mapping pointer input to world coordinates                                               |
+| `src/main.ts`               | DOM interface, local saves, inspectors, lab brushes, and discovery progression                                                         |
+| `src/ui.ts`                 | Compact palette, combiner, world menus, and canvas toolbar markup                                                                      |
+| `src/palette-drag.ts`       | Shared pointer drag handling, preview, cancellation, and keyboard alternative                                                          |
+| `src/combiner.ts`           | Reusable combination previews, modifier inheritance, and canvas drop mapping                                                           |
+| `src/crafting.ts`           | Discovery graph, shared material/life keys, and versioned progression                                                                  |
+| `src/starting-world.ts`     | Starting terrain restricted to the four base materials                                                                                 |
 
-To add a material, assign a stable ID in `elements.ts`, then opt into capabilities in `materials.ts`. For example, an absorbent organic fuel automatically gets wet, dries, resists ignition while wet, burns when sufficiently hot, and responds to corrosive environments. A new water-like liquid inherits diffusion, electrical conduction, absorption, and habitat checks through its `aqueous` trait. Add specialized phase transformations only where needed.
+To add a material, assign a stable ID in `ids.ts`, then add its definition, parent material, capability overrides, and discovery pair in `expansion.ts`. For example, an absorbent organic fuel automatically gets wet, dries, resists ignition while wet, burns when sufficiently hot, and responds to corrosive environments. A new water-like liquid inherits diffusion, electrical conduction, absorption, and habitat checks through its `aqueous` trait. Optional transition and contact properties provide specialized behavior without expanding a switch for every material.
 
 Species tolerance profiles live in `habitats`; the existing fish update uses the profile to evaluate temperature, salinity, pollution, and acidity. Humans share the water-safety check for drinking. The current plant form is a single rooted branching species; its growth rules are separate from particle rendering.
 

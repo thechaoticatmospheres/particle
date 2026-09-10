@@ -1,6 +1,7 @@
 import { E, byId } from "./elements";
-import { material } from "./materials";
+import { material, hasExtendedContact, hasExtendedStep } from "./materials";
 import type { Simulation } from "./simulation";
+import { extendedContact, extendedStep } from "./material-behaviors";
 
 const clamp = (v: number) => Math.max(0, Math.min(100, v));
 
@@ -31,8 +32,8 @@ export function ignite(s: Simulation, i: number) {
     id = s.cells[i],
     traits = material[id];
   if (!traits.fuel || f.moisture[i] > 25 || f.burning[i]) return false;
-  if (id === E.Gunpowder) {
-    s.explode(i % s.width, Math.floor(i / s.width));
+  if (id === E.Gunpowder || traits.explosive) {
+    s.explode(i % s.width, Math.floor(i / s.width), traits.explosive ?? 12);
     return true;
   }
   if (
@@ -94,6 +95,8 @@ function diffuse(s: Simulation, i: number, j: number) {
 /** Symmetric, trait-based contact rules. Called once per touching pair during the environmental pass. */
 export function contact(s: Simulation, i: number, j: number) {
   diffuse(s, i, j);
+  if (hasExtendedContact[s.cells[i]]) extendedContact(s, i, j);
+  if (hasExtendedContact[s.cells[j]]) extendedContact(s, j, i);
   for (const [a, b] of [
     [i, j],
     [j, i],
@@ -312,6 +315,7 @@ export function stepEnvironment(s: Simulation) {
         );
     }
     if (s.cells[i] === E.Spark) f.charge[i] = 255;
+    if (hasExtendedStep[s.cells[i]] && extendedStep(s, i)) continue;
     const current = s.cells[i],
       traits = material[current],
       temp = f.temperature[i];
@@ -340,12 +344,14 @@ export function stepEnvironment(s: Simulation) {
         if (target >= 0 && s.random() < 0.2)
           s.put(target, s.random() < 0.65 ? E.Fire : E.Smoke);
         if (!f.burning[i]) {
-          s.transform(i, current === E.Oil ? E.Smoke : E.Ash, {
+          const residue =
+            traits.burnProduct ?? (current === E.Oil ? E.Smoke : E.Ash);
+          s.transform(i, residue, {
             temperature: 80,
             moisture: 0,
             fertility: current === E.Oil ? 0 : 80,
           });
-          s.onDiscover(current === E.Oil ? E.Smoke : E.Ash);
+          s.onDiscover(residue);
           continue;
         }
       }
@@ -454,7 +460,9 @@ export function stepEnvironment(s: Simulation) {
     }
     if (
       traits.organic &&
-      (f.salinity[i] > 15 || f.pollution[i] > 40 || f.acidity[i] > 15)
+      (f.salinity[i] > (traits.saltTolerance ?? 15) ||
+        f.pollution[i] > 40 ||
+        f.acidity[i] > 15)
     ) {
       f.vitality[i] = Math.max(0, f.vitality[i] - 2);
       if (f.vitality[i] === 0 && current !== E.Wood)

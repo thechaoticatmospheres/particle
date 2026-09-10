@@ -108,7 +108,7 @@ $("#overlay").addEventListener("change", (e) => {
 $("#field-guide").onclick = showFieldGuide;
 $("#ecology-lab").onclick = () => {
   if (unlocked.size < allItems.length) {
-    toast("Unlock all 27 items to open the Living lab preset.");
+    toast(`Unlock all ${allItems.length} items to open the Living lab preset.`);
     return;
   }
 

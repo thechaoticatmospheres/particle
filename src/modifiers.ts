@@ -48,6 +48,7 @@ export class Modifiers {
     this.temperature[i] = t.defaultTemperature;
     this.moisture[i] = t.defaultMoisture;
     this.fertility[i] = t.defaultFertility;
+    this.pollution[i] = t.defaultPollution ?? 0;
     this.vitality[i] = 100;
     if (id === E.Salt) this.salinity[i] = 32;
     if (id === E.Acid) this.acidity[i] = 100;

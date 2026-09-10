@@ -116,6 +116,19 @@ Water with charge 40 or above fails the shared habitat-safety check. These are g
 
 ## Lab versus live world
 
-The combiner provides **13 physical material previews**, **13 additional discovery recipes**, and **20 modifier previews**. A modifier preview prepares a brush with the resulting properties. For example, Salt + Water prepares Water with salinity 35; it does not invent a Saltwater material ID.
+The combiner provides **13 physical material previews**, **73 additional discovery recipes**, and **20 modifier previews**. A modifier preview prepares a brush with the resulting properties. For example, Salt + Water prepares Water with salinity 35; it does not invent a Saltwater material ID.
 
 Only Sand, Water, Stone, and Fire start unlocked. Every other material and all three life forms require a combiner recipe. The additional abstract recipes in `src/crafting.ts` include Steam + Smoke → Acid and Ash + Salt → Gunpowder. These do not change live contact rules: physical reactions run through the environmental systems and require appropriate conditions, and never unlock the palette automatically. See the in-game Discoveries journal for every unlock recipe.
+
+## Expanded material capabilities
+
+The 60 additional materials in `src/expansion.ts` inherit shared environmental capabilities and add optional behaviors through `src/material-behaviors.ts`:
+
+- **Phase changes:** wax melts and solidifies; clay fires into brick; minerals melt into lava or glass at their configured temperatures; metals melt into a shared molten metal that cools into Metal; alcohol vaporizes and condenses; dry ice becomes carbon dioxide and refreezes below its threshold.
+- **Water contact:** charcoal removes pollution until its own capacity reaches 100; mercury and tar contaminate aqueous neighbors; soap becomes foam, which expires into water; lye dissolves into polluted water. Fertilizer and sugar dissolve through the nutrient system. Sponge, cotton, cork, and other absorbent materials reuse finite water uptake.
+- **Chemical conditions:** limestone, chalk, and lye consume a finite nutrient reserve to neutralize adjacent acidity. Iron, steel, and copper accumulate corrosion beside water or very wet particles, faster with salt, and become Rust.
+- **Combustion:** oxygen is consumed to help sufficiently hot, dry fuel ignite; carbon dioxide is consumed to suppress an adjacent fire or burning particle; hydrogen explodes when ignited. Fuels have different ignition points, burn durations, and residues. Wet absorbent fuels resist ignition.
+- **Organic growth:** moss and fungus spread into empty space near moist fertile soil. Algae spreads through nutrient-bearing freshwater; kelp needs saline water. Growth consumes nutrients and checks temperature, salinity, pollution, and acidity; drought depletes vitality.
+- **Transport:** honey, tar, resin, slime, and molten wax flow at different rates. Metals conduct electricity; insulating materials do not. Aqueous liquids participate in habitat checks, so polluted slime is unsafe for fish.
+
+These are simplified game rules. Discovery pairs remain separate from the conditions needed for transformations in the world.
