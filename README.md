@@ -1,0 +1,91 @@
+# Particle — living sandbox
+
+A single-player particle sandbox built with **Phaser 3, TypeScript, and Vite**. Start with **Sand, Water, Stone, and Fire** and unlock 20 more materials, humans, freshwater fish, and saltwater fish through the combiner.
+
+## Discovery progression
+
+Only four items are initially available. All 23 others require combining two unlocked items; the complete graph is verified by tests against the actual combiner. Examples:
+
+- Stone + Sand → Soil; Soil + Water → Mud; Soil + Mud → Seed.
+- Seed + Water → Plant; Plant + Plant → Wood.
+- Plant + Water → Freshwater fish; Freshwater fish + Salt → Saltwater fish.
+- Mud + Plant → Human.
+
+Click a locked item or open Discoveries for its recipe. Natural world reactions do not unlock palette items. Progress uses a new versioned browser record; legacy saves can restore their world but cannot grant old starter unlocks. The Living lab preset becomes available after unlocking all 27 items.
+
+## Hosting
+
+GitHub Pages deployment is configured in `.github/workflows/pages.yml`. Every push to `main` runs tests, builds the game, and publishes `dist`. In repository **Settings → Pages**, select **GitHub Actions** as the source. Vite uses relative asset paths so the game works under a repository URL as well as localhost. Deployment uses GitHub's built-in token; no custom secrets are needed.
+
+## Run
+
+```sh
+npm install
+npm run dev
+npm test
+npm run build
+```
+
+Open the local URL from Vite. `npm run preview` serves the production build.
+
+## Try the ecology pass
+
+1. After discovering all 27 items, choose **World → Living lab**. The left aquarium contains freshwater fish; the right contains saltwater fish. Seeds and humans occupy the ground between them.
+2. Select the **Salinity** overlay to see the difference. Use **Inspect (I)** on particles and creatures to read their conditions and needs.
+3. Drop **Salt** into water. It dissolves and spreads as a property of Water. Saltwater fish need salinity 12–70; freshwater fish need 0–9; humans drink safe water at 0–7.
+4. Place **Seed** on moist **Soil**. Seedlings grow into branching, woody plants and eventually release seeds. Try fresh water, fertilizer, salt, or fire near their roots.
+5. Unlocked **Human**, **Freshwater fish**, and **Saltwater fish** appear in the default **All** palette alongside materials. Select and click once per creature, or drag one into the world. Fish must be placed in water.
+6. Drag **Salt** and **Water** into **Combine**. The second drop immediately produces **Salty water**. Drag the result to place a blob, click it to paint, or combine it again. Existing modifiers carry forward when the resulting base material stays the same. Selecting a base material resets its properties.
+
+The **Field guide** explains the environmental systems and lists all 20 modifier experiments. See [INTERACTIONS.md](INTERACTIONS.md) for the complete mechanics.
+
+## Controls
+
+- Click/drag: paint. Right-click or **E**: erase particles and creatures. **B**: brush. **I**: inspect.
+- Drag palette items into the canvas to place a circular blob using the brush size (minimum radius 5). Drag two items into Combine for an automatic result. Focus a palette item and press **C** for a keyboard alternative. **Escape** cancels a drag; dropping outside a target does nothing.
+- Scroll or **[ / ]**: brush size. Toolbar: round/square brush, undo, pause, single tick, speed, clear, and fullscreen.
+- **Space**: pause/resume. Painting, adding life, and inspecting still work while paused.
+- Overlay selector: natural colors, temperature, salinity, moisture, pollution, fertility, or electricity.
+- Population counter: inspect living creatures, current behavior, health, rooted plants, and deaths.
+- Save/load: one complete local world, including modifiers and living entities. Undo restores the last world edit. A new world keeps unlocked element discoveries.
+
+## Material library
+
+The 24 materials are Sand, Water, Stone, Soil, Wood, Seed, Fire, Lava, Oil, Ice, Metal, Salt, Steam, Glass, Mud, Plant, Ash, Smoke, Obsidian, Snow, Acid, Crystal, Gunpowder, and Spark.
+
+There are **4 starter materials** and **23 unlockable palette items**, including life. The combiner has 13 physical material previews, 13 additional discovery recipes, and 20 modifier previews. Discovery recipes are abstract game rules, separate from live physical reactions. For example, combining Ash + Salt unlocks Gunpowder, while ash and salt touching in the world still behave as nutrients and dissolved minerals.
+
+## Architecture and extension points
+
+| File                 | Responsibility                                                                                                                         |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/elements.ts`    | Stable material IDs, descriptions, palette groups, and material discovery recipes                                                      |
+| `src/materials.ts`   | Shared capabilities: absorbency, conductivity, fuel, ignition point, solubility, resistance, soil/water traits, and species tolerances |
+| `src/modifiers.ts`   | Typed arrays for particle properties; initialization, transport, snapshots, and compact run-length storage                             |
+| `src/environment.ts` | Heat exchange, diffusion, absorption, dissolution, phases, combustion, corrosion, neutralization, and electrical propagation           |
+| `src/life.ts`        | Rooted plant lifecycle, human needs and movement, fish habitat checks, death, and entity validation                                    |
+| `src/simulation.ts`  | Seeded particle movement, terrain, world orchestration, shared state, and versioned persistence                                        |
+| `src/experiments.ts` | Modifier experiments and explanatory field notes                                                                                       |
+| `src/scene.ts`       | Phaser rendering, life sprites, overlays, and mapping pointer input to world coordinates                                               |
+| `src/main.ts`        | DOM interface, local saves, inspectors, lab brushes, and discovery progression                                                         |
+| `src/ui.ts`          | Compact palette, combiner, world menus, and canvas toolbar markup |
+| `src/palette-drag.ts` | Shared pointer drag handling, preview, cancellation, and keyboard alternative |
+| `src/combiner.ts`    | Reusable combination previews, modifier inheritance, and canvas drop mapping |
+| `src/crafting.ts`    | Discovery graph, shared material/life keys, and versioned progression |
+| `src/starting-world.ts` | Starting terrain restricted to the four base materials |
+
+To add a material, assign a stable ID in `elements.ts`, then opt into capabilities in `materials.ts`. For example, an absorbent organic fuel automatically gets wet, dries, resists ignition while wet, burns when sufficiently hot, and responds to corrosive environments. A new water-like liquid inherits diffusion, electrical conduction, absorption, and habitat checks through its `aqueous` trait. Add specialized phase transformations only where needed.
+
+Species tolerance profiles live in `habitats`; the existing fish update uses the profile to evaluate temperature, salinity, pollution, and acidity. Humans share the water-safety check for drinking. The current plant form is a single rooted branching species; its growth rules are separate from particle rendering.
+
+The grid is **540 × 220**, with 118,800 cells. The physics clock is 30 Hz; environment work runs every fourth tick, creature decisions every third tick, and growth checks every fifteenth tick. Inert, ambient-temperature minerals skip unnecessary environmental updates. Limits are 120 creatures and 180 rooted plant colonies.
+
+The byte-based material registry supports up to 255 IDs. For larger registries, upgrade the cell array and reaction-key stride. For substantially larger worlds, move simulation to a Web Worker and introduce active chunks.
+
+## Saves and scope
+
+Version 2 saves include all particle modifiers, organisms, plants, timers, random state, and field-note history. Arrays are run-length packed to keep saves small. Version 1 worlds at the current grid dimensions migrate with default material properties. Malformed saves are validated before live state changes.
+
+Saves and discoveries are browser-local. No accounts, cloud sync, or backend are used. Chemistry, metabolism, and time scales are intentionally simplified for play; salinity and acidity use game-scale values. Humans currently have individual survival behavior rather than villages or civilization systems. Fish do not reproduce in this pass.
+
+Pixel art is generated locally. Lucide supplies UI icons. DM Sans and Manrope load from Google Fonts with local fallbacks. Verification evidence is in [QA.md](QA.md).
