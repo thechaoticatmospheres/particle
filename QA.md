@@ -16,7 +16,7 @@ The suites also verify version 1 save migration, exact deterministic continuatio
 - Clicking locked Human displayed its Mud + Plant recipe and did not select or spawn it.
 - Dragging Water and Fire into Combine unlocked Steam (5 / 27); reloading preserved that discovery.
 - Played the combination chain through Soil, Mud, Seed, Plant, Human, Freshwater fish, Salt, and Saltwater fish. All unlocked successfully, with no browser errors.
-- GitHub Pages workflow and relative production assets are prepared. Public repository creation awaits explicit user approval following automatic approval review.
+- GitHub Pages workflow runs tests and builds before deployment; production asset URLs are relative to the repository path.
 
 ### Minimal UI and direct manipulation
 
