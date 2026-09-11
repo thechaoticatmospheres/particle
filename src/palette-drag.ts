@@ -93,6 +93,16 @@ export function enablePaletteDrag(options: {
     if (dragged) options.drop(item, e.clientX, e.clientY);
   });
   document.addEventListener("pointercancel", finish);
+  document.addEventListener("contextmenu", (e) => {
+    const node = (e.target as HTMLElement).closest<HTMLElement>(
+      "[data-palette]",
+    );
+    if (!node) return;
+    e.preventDefault();
+    finish();
+    const item = options.payload(node);
+    if (item) options.combine(item);
+  });
   window.addEventListener("blur", finish);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") finish();

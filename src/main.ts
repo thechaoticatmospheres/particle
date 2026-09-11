@@ -213,7 +213,7 @@ function renderLibrary() {
             !Object.keys(controls.variant).length;
       const key = item.kind === "life" ? item.species : String(item.id);
       const label = itemLabel(item);
-      return `<button class="element-card ${locked ? "locked" : ""} ${selected ? "selected" : ""}" data-palette="${key}" aria-label="${label}${locked ? ", undiscovered" : ""}" aria-pressed="${selected}" title="${locked ? "Combine elements to discover " + label : label + " — click to select, drag to place or combine. Keyboard: C to combine."}">${locked ? icon("lock-keyhole") : itemIcon(item)}<span>${label}</span></button>`;
+      return `<button class="element-card ${locked ? "locked" : ""} ${selected ? "selected" : ""}" data-palette="${key}" aria-label="${label}${locked ? ", undiscovered" : ""}" aria-pressed="${selected}" title="${locked ? "Combine elements to discover " + label : label + " — click to select, drag to place or combine. Right-click or C to combine."}">${locked ? icon("lock-keyhole") : itemIcon(item)}<span>${label}</span></button>`;
     })
     .join("");
   $("#empty-search").hidden = visible.length > 0;
@@ -371,7 +371,7 @@ function renderLab() {
   $("#lab-result").innerHTML = results
     .map(
       (item, i) =>
-        `<button class="result-chip" data-palette="result-${i}" aria-label="${itemLabel(item)} result" title="Click to paint. Drag to place or combine. C to combine.">${itemIcon(item, 22)}<span>${itemLabel(item)}</span>${icon("arrow-right")}</button>`,
+        `<button class="result-chip" data-palette="result-${i}" aria-label="${itemLabel(item)} result" title="Click to paint. Drag to place or combine. Right-click or C to combine.">${itemIcon(item, 22)}<span>${itemLabel(item)}</span>${icon("arrow-right")}</button>`,
     )
     .join("");
   refreshIcons();
@@ -590,7 +590,7 @@ $("#new-world").onclick = worldPicker;
 $("#journal-tab").onclick = showJournal;
 $("#help").onclick = () =>
   dialog(
-    `<span class="eyebrow">WELCOME, WORLD MAKER</span><h2>A sandbox for your curiosity.</h2><p class="modal-intro">Click a palette item to select it and draw in the world. Drag an item onto the canvas to place a blob, or drop two items into Combine for an immediate result. Click a result to paint it or drag it into the world. Keyboard: focus a palette item and press C to add it to Combine. Every colored pixel is a particle you can change. There is no score, no wrong answer, and no rush.</p><div class="help-steps"><p><b>01 &nbsp; Make your mark.</b> Paint sand, water, stone, fire, and more. Right-click to erase. Scroll to change the brush size.</p><p><b>02 &nbsp; Let things meet.</b> Water and fire become steam. Seeds grow into plants when rooted in damp, healthy soil. Try dropping lava into the lake.</p><p><b>03 &nbsp; Follow the discoveries.</b> Start with four elements. Drop two unlocked items into Combine to unlock another material or life form. Discoveries are saved in this browser.</p></div><div class="shortcuts"><span><kbd>B</kbd> Brush</span><span><kbd>E</kbd> Erase</span><span><kbd>I</kbd> Inspect</span><span><kbd>Space</kbd> Pause</span><span><kbd>[ ]</kbd> Brush size</span><span><kbd>Ctrl Z</kbd> Undo</span></div><p class="modal-footnote">Save world stores one world locally. Element recipes are creative game rules, not real chemistry.</p>`,
+    `<span class="eyebrow">WELCOME, WORLD MAKER</span><h2>A sandbox for your curiosity.</h2><p class="modal-intro">Click a palette item to select it and draw in the world. Drag an item onto the canvas to place a blob, or drop two items into Combine for an immediate result. Click a result to paint it or drag it into the world. Right-click a palette item or result to add it to Combine. Keyboard: focus a palette item and press C. Every colored pixel is a particle you can change. There is no score, no wrong answer, and no rush.</p><div class="help-steps"><p><b>01 &nbsp; Make your mark.</b> Paint sand, water, stone, fire, and more. Right-click to erase. Scroll to change the brush size.</p><p><b>02 &nbsp; Let things meet.</b> Water and fire become steam. Seeds grow into plants when rooted in damp, healthy soil. Try dropping lava into the lake.</p><p><b>03 &nbsp; Follow the discoveries.</b> Start with four elements. Drop two unlocked items into Combine to unlock another material or life form. Discoveries are saved in this browser.</p></div><div class="shortcuts"><span><kbd>B</kbd> Brush</span><span><kbd>E</kbd> Erase</span><span><kbd>I</kbd> Inspect</span><span><kbd>Space</kbd> Pause</span><span><kbd>[ ]</kbd> Brush size</span><span><kbd>Ctrl Z</kbd> Undo</span></div><p class="modal-footnote">Save world stores one world locally. Element recipes are creative game rules, not real chemistry.</p>`,
   );
 $("#sound").onclick = () => {
   muted = !muted;

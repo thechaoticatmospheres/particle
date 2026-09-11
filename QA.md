@@ -12,6 +12,11 @@ The suites also verify version 1 save migration, exact deterministic continuatio
 
 ## Browser verification
 
+### Right-click combining
+
+- Right-clicked Water and then Fire: each added once, and the second input produced Steam automatically.
+- Right-clicked the Steam result to start another combination. Right-clicking locked Wood did not add it or change the current input. No context menu appeared over palette items; selection remained Sand.
+
 ### 200 materials and shared effects
 
 - Existing 15 discoveries were preserved in a 203-item palette. Played the new paths to Sodium, Cloud, Storm Cloud, and Uranium through normal combiner controls.
