@@ -448,19 +448,24 @@ describe("humans and species-specific habitats", () => {
 });
 
 describe("versioned ecology saves", () => {
-  it("keeps a full living world stable and compact over 1,000 ticks", () => {
-    const s = new Simulation();
-    s.generate(72831);
-    run(s, 1000);
-    expect(s.plants.length).toBeGreaterThan(0);
-    expect(s.creatures.some((c) => c.species === "human")).toBe(true);
-    for (const c of s.creatures) {
-      expect(Number.isFinite(c.x + c.y + c.health)).toBe(true);
-      expect(c.x).toBeGreaterThanOrEqual(0);
-      expect(c.x).toBeLessThan(s.width);
-    }
-    expect(JSON.stringify(s.serialize()).length * 2).toBeLessThan(4_000_000);
-  }, 15000);
+  it(
+    "keeps a full living world stable and compact over 1,000 ticks",
+    () => {
+      const s = new Simulation();
+      s.generate(72831);
+      run(s, 1000);
+      expect(s.plants.length).toBeGreaterThan(0);
+      expect(s.creatures.some((c) => c.species === "human")).toBe(true);
+      for (const c of s.creatures) {
+        expect(Number.isFinite(c.x + c.y + c.health)).toBe(true);
+        expect(c.x).toBeGreaterThanOrEqual(0);
+        expect(c.x).toBeLessThan(s.width);
+      }
+      expect(JSON.stringify(s.serialize()).length * 2).toBeLessThan(4_000_000);
+      // Shared CI runners need more headroom for this full-world stability check.
+    },
+    process.env.CI ? 30000 : 15000,
+  );
   it("round-trips all modifiers, creatures, plants, and deterministic continuation", () => {
     const s = patch();
     run(s, 60);
