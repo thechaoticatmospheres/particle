@@ -105,3 +105,7 @@ Version 2 saves include all particle modifiers, organisms, plants, timers, rando
 Saves and discoveries are browser-local. No accounts, cloud sync, or backend are used. Chemistry, metabolism, and time scales are intentionally simplified for play; salinity and acidity use game-scale values. Humans currently have individual survival behavior rather than villages or civilization systems. Fish do not reproduce in this pass.
 
 Pixel art is generated locally. Lucide supplies UI icons. DM Sans and Manrope load from Google Fonts with local fallbacks. Verification evidence is in [QA.md](QA.md).
+
+## World templates
+
+Open **World → New world** to choose First world, Blank canvas, Canyon river, Reservoirs, Underground lake, or Discovery chaos. The three new landscapes use starter terrain. Discovery chaos shuffles a patch of every unlocked material (creatures are excluded) and starts paused. Press Play to start reactions. Discoveries persist, and Undo restores the previous world immediately after switching.

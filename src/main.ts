@@ -1,4 +1,9 @@
 import "./style.css";
+import {
+  generateTemplate,
+  worldTemplates,
+  type WorldTemplate,
+} from "./world-templates";
 import { availableHints } from "./hints";
 import { ui } from "./ui";
 import { combine, worldPoint, type PaletteItem } from "./combiner";
@@ -498,24 +503,33 @@ function showJournal() {
 }
 function worldPicker() {
   dialog(
-    `<span class="eyebrow">A FRESH BEGINNING</span><h2>Make room for possibility.</h2><p class="modal-intro">Choose your starting point. Your discoveries stay with you. Save your current world first if you want to return.</p><div class="world-options"><button data-preset="garden">${icon("globe-2")}<strong>Starting terrain</strong><span>Stone, sand, and water. Add life as you discover it.</span></button><button data-preset="empty">${icon("square")}<strong>A blank universe</strong><span>Nothing here. Everything possible.</span></button></div>`,
+    `<span class="eyebrow">WORLD TEMPLATES</span><h2>Choose a starting point.</h2><p class="modal-intro">Your discoveries stay with you. Save your current world to keep it; Undo can restore it immediately after switching.</p><div class="world-options">${worldTemplates.map((t) => `<button data-preset="${t.id}"><strong>${t.name}</strong><span>${t.description}</span></button>`).join("")}</div>`,
   );
-  document.querySelectorAll<HTMLButtonElement>("[data-preset]").forEach(
-    (b) =>
-      (b.onclick = () => {
-        undo = sim.serialize();
-        if (b.dataset.preset === "empty") {
-          sim.clear();
-          $("#world-name").textContent = "A blank universe";
-        } else {
-          generateStartingWorld(sim, Date.now() | 0);
-          $("#world-name").textContent = "New world";
-        }
-        $("#modal").close();
-        toast("Your next world starts here.");
-      }),
-  );
+  document.querySelectorAll<HTMLButtonElement>("[data-preset]").forEach((b) => {
+    b.onclick = () => {
+      undo = sim.serialize();
+      const template = b.dataset.preset as WorldTemplate;
+      generateTemplate(sim, template, unlocked, Date.now() | 0);
+      $("#world-name").textContent = worldTemplates.find(
+        (t) => t.id === template,
+      )!.name;
+      $("#inspection-panel").hidden = true;
+      $("#environment-event").textContent = "";
+      $("#modal").setAttribute(
+        "data-was-paused",
+        String(template === "random"),
+      );
+      pause(template === "random");
+      $("#modal").close();
+      toast(
+        template === "random"
+          ? "Your discovered materials are ready. Press Play to start the reactions."
+          : "World ready. Your discoveries are preserved.",
+      );
+    };
+  });
 }
+
 document.querySelectorAll<HTMLButtonElement>(".category").forEach(
   (b) =>
     (b.onclick = () => {
