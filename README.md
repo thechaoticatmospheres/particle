@@ -1,17 +1,17 @@
 # Particle — living sandbox
 
-A single-player particle sandbox built with **Phaser 3, TypeScript, and Vite**. Start with **Sand, Water, Stone, and Fire** and unlock **80 more materials**, humans, freshwater fish, and saltwater fish through the combiner.
+A single-player particle sandbox built with **Phaser 3, TypeScript, and Vite**. Start with **Sand, Water, Stone, and Fire** and unlock **196 more materials**, humans, freshwater fish, and saltwater fish through the combiner.
 
 ## Discovery progression
 
-Only four items are initially available. All 83 others require combining two unlocked items; the complete graph is verified by tests against the actual combiner. Examples:
+Only four items are initially available. All 199 others require combining two unlocked items; the complete graph is verified by tests against the actual combiner. Examples:
 
 - Stone + Sand → Soil; Soil + Water → Mud; Soil + Mud → Seed.
 - Seed + Water → Plant; Plant + Plant → Wood.
 - Plant + Water → Freshwater fish; Freshwater fish + Salt → Saltwater fish.
 - Mud + Plant → Human.
 
-Click a locked item or open Discoveries for its recipe. Natural world reactions do not unlock palette items. Existing version 3 discoveries are preserved; the 60 new materials start locked. Older legacy saves can restore their world but cannot grant old starter unlocks. The Living lab preset becomes available after unlocking all 87 items.
+Click a locked item or open Discoveries for its recipe. Natural world reactions do not unlock palette items. Existing version 3 discoveries are preserved; the 116 new materials start locked. Older legacy saves can restore their world but cannot grant old starter unlocks. The Living lab preset becomes available after unlocking all 203 items.
 
 ## Hosting
 
@@ -30,7 +30,7 @@ Open the local URL from Vite. `npm run preview` serves the production build.
 
 ## Try the ecology pass
 
-1. After discovering all 87 items, choose **World → Living lab**. The left aquarium contains freshwater fish; the right contains saltwater fish. Seeds and humans occupy the ground between them.
+1. After discovering all 203 items, choose **World → Living lab**. The left aquarium contains freshwater fish; the right contains saltwater fish. Seeds and humans occupy the ground between them.
 2. Select the **Salinity** overlay to see the difference. Use **Inspect (I)** on particles and creatures to read their conditions and needs.
 3. Drop **Salt** into water. It dissolves and spreads as a property of Water. Saltwater fish need salinity 12–70; freshwater fish need 0–9; humans drink safe water at 0–7.
 4. Place **Seed** on moist **Soil**. Seedlings grow into branching, woody plants and eventually release seeds. Try fresh water, fertilizer, salt, or fire near their roots.
@@ -51,15 +51,21 @@ The **Field guide** explains the environmental systems and lists all 20 modifier
 
 ## Material library
 
-The library contains **84 materials** plus three life forms. The original 24 are joined by 60 materials across minerals and gems, metals and alloys, growing organics, absorbent fibers, fuels, viscous liquids, and reactive gases. See `src/expansion.ts` for every material, capability, and discovery pair.
+The library contains **200 materials** plus three life forms. The original 24 and first 60 additions are joined by 116 discoveries covering reactive chemicals, machinery, radiation, weather, consuming colonies, and fantasy matter. See `src/expansion.ts` and `src/frontier.ts` for the definitions and discovery pairs.
 
-There are **4 starter materials** and **83 unlockable palette items**, including life. The combiner has 13 physical material previews, 73 additional discovery recipes, and 20 modifier previews. Discovery recipes are abstract game rules, separate from live physical reactions. For example, combining Ash + Salt unlocks Gunpowder, while ash and salt touching in the world still behave as nutrients and dissolved minerals.
+There are **4 starter materials** and **199 unlockable palette items**, including life. The combiner has 13 physical material previews, 189 additional discovery recipes, and 20 modifier previews. Discovery recipes are abstract game rules, separate from live physical reactions. For example, combining Ash + Salt unlocks Gunpowder, while ash and salt touching in the world still behave as nutrients and dissolved minerals.
 
 New discovery chains include Mud + Sand → Clay, Clay + Fire → Brick; Wood + Stone → Coal, Metal + Stone → Iron, Iron + Coal → Steel; and Plant + Steam → Algae, Algae + Salt → Kelp. Every new item remains reachable from the four starters.
 
 Physical capabilities include wax melting and solidifying, clay firing, metal melting, alcohol evaporation and condensation, dry ice sublimation, charcoal filtering pollution with finite capacity, soap foaming, fertilizer dissolving into nutrients, iron rusting faster near salty water, mercury polluting water, oxygen supporting ignition, and carbon dioxide suppressing fire. Moss and fungus spread near moist fertile soil; algae and kelp require nutrient-bearing water within their salinity range. Existing heat, moisture, combustion, acidity, electricity, and habitat systems apply through shared traits.
 
 ## Architecture and extension points
+
+The 200-material pass adds pressure bursts, radioactive dose and shielding, powered machines, directed chemical reactions, finite emission reservoirs, consuming colonies, magnetic and gravity impulses, and mutation. These properties combine with the original temperature, salt, acidity, pollution, nutrient, and electrical systems. Try Sodium + Water in the world, or discover Cloud + Spark and drag a storm above a lake. The Field guide includes practical experiments.
+
+Pressure and Radiation overlays reveal the new conditions. Inspect also shows remaining reserve. Clouds, batteries, emitters, antidotes, and replicating colonies have bounded supplies. Effects move and transform real particles; transient rings, arcs, and glow make their activity visible. Pressure is a local game-scale approximation rather than a fluid solver, and fantasy materials are intentionally exaggerated.
+
+`src/frontier.ts` declares the 116 added materials. `src/dynamics.ts` implements shared systems; `Dynamics` in `src/materials.ts` defines their reusable parameters. Add contact transformations, powered responses, emission products, colony food requirements, or force parameters in data. Expensive spatial effects are staggered and limited per tick; visual effects are capped at 48. Pressure and radiation are stored and transported with particles; older version 2 saves initialize these new fields to zero.
 
 | File                        | Responsibility                                                                                                                         |
 | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |

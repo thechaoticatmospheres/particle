@@ -2,6 +2,7 @@ import { E, byId } from "./elements";
 import { material, hasExtendedContact, hasExtendedStep } from "./materials";
 import type { Simulation } from "./simulation";
 import { extendedContact, extendedStep } from "./material-behaviors";
+import { dynamicContact, stepDynamics } from "./dynamics";
 
 const clamp = (v: number) => Math.max(0, Math.min(100, v));
 
@@ -9,8 +10,9 @@ const clamp = (v: number) => Math.max(0, Math.min(100, v));
 export function evaporate(s: Simulation, i: number) {
   const f = s.fields,
     salt = f.salinity[i],
-    pollution = f.pollution[i];
-  if (salt || pollution) {
+    pollution = f.pollution[i],
+    radiation = f.radiation[i];
+  if (salt || pollution || radiation) {
     const target = s.emptyNeighbor(i);
     if (target < 0) return false;
     s.put(target, E.Steam);
@@ -18,6 +20,7 @@ export function evaporate(s: Simulation, i: number) {
     s.put(i, salt ? E.Salt : E.Ash);
     f.salinity[i] = salt;
     f.pollution[i] = pollution;
+    f.radiation[i] = radiation;
     f.temperature[i] = 100;
   } else {
     s.put(i, E.Steam);
@@ -95,6 +98,10 @@ function diffuse(s: Simulation, i: number, j: number) {
 /** Symmetric, trait-based contact rules. Called once per touching pair during the environmental pass. */
 export function contact(s: Simulation, i: number, j: number) {
   diffuse(s, i, j);
+  if (material[s.cells[i]].dynamics || s.fields.radiation[i])
+    dynamicContact(s, i, j);
+  if (material[s.cells[j]].dynamics || s.fields.radiation[j])
+    dynamicContact(s, j, i);
   if (hasExtendedContact[s.cells[i]]) extendedContact(s, i, j);
   if (hasExtendedContact[s.cells[j]]) extendedContact(s, j, i);
   for (const [a, b] of [
@@ -268,7 +275,9 @@ export function stepEnvironment(s: Simulation) {
       f.temperature[i] === 20 &&
       !f.corrosion[i] &&
       !f.charge[i] &&
-      !f.acidity[i]
+      !f.acidity[i] &&
+      !f.radiation[i] &&
+      !f.pressure[i]
     ) {
       let active = false;
       for (const j of s.neighbors(i)) {
@@ -315,6 +324,13 @@ export function stepEnvironment(s: Simulation) {
         );
     }
     if (s.cells[i] === E.Spark) f.charge[i] = 255;
+    if (
+      material[s.cells[i]].dynamics ||
+      f.radiation[i] ||
+      byId.get(s.cells[i])?.state === "gas"
+    )
+      stepDynamics(s, i);
+    if (!s.cells[i]) continue;
     if (hasExtendedStep[s.cells[i]] && extendedStep(s, i)) continue;
     const current = s.cells[i],
       traits = material[current],

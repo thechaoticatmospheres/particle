@@ -116,7 +116,7 @@ Water with charge 40 or above fails the shared habitat-safety check. These are g
 
 ## Lab versus live world
 
-The combiner provides **13 physical material previews**, **73 additional discovery recipes**, and **20 modifier previews**. A modifier preview prepares a brush with the resulting properties. For example, Salt + Water prepares Water with salinity 35; it does not invent a Saltwater material ID.
+The combiner provides **13 physical material previews**, **189 additional discovery recipes**, and **20 modifier previews**. A modifier preview prepares a brush with the resulting properties. For example, Salt + Water prepares Water with salinity 35; it does not invent a Saltwater material ID.
 
 Only Sand, Water, Stone, and Fire start unlocked. Every other material and all three life forms require a combiner recipe. The additional abstract recipes in `src/crafting.ts` include Steam + Smoke → Acid and Ash + Salt → Gunpowder. These do not change live contact rules: physical reactions run through the environmental systems and require appropriate conditions, and never unlock the palette automatically. See the in-game Discoveries journal for every unlock recipe.
 
@@ -132,3 +132,15 @@ The 60 additional materials in `src/expansion.ts` inherit shared environmental c
 - **Transport:** honey, tar, resin, slime, and molten wax flow at different rates. Metals conduct electricity; insulating materials do not. Aqueous liquids participate in habitat checks, so polluted slime is unsafe for fish.
 
 These are simplified game rules. Discovery pairs remain separate from the conditions needed for transformations in the world.
+
+## The 200-material systems pass
+
+- **Pressure:** gas with four occupied cardinal neighbors gains local pressure; exposed gas vents. At 85, it bursts, shifts loose particles, and fractures low-resistance adjacent walls into gravel. Concrete, metal, and stronger barriers survive. Capacitors use charge to build pressure and discharge into neighboring particles. The Pressure overlay shows this game-scale condition.
+- **Radiation:** emitters irradiate along four short rays. Lead, lead glass, depleted fuel, and neutronium block those rays. Dose travels through contact with water or absorbent matter, decays slowly, damages organisms, and can mutate highly irradiated organic particles. Fish reject water at dose 20 or above. Distillation leaves radioactive residue behind. Antidote spends its reserve reducing dose and curing infection.
+- **Machines:** batteries generate charge until exhausted. Solar cells generate charge only with an unobstructed vertical path to the sky. Conductors carry power to heaters, coolers, electrodes, coils, electromagnets, and repulsors. Electrodes consume water to make hydrogen and oxygen. Coils arc through gaps toward conductors or fuel. Superconductors lose their special state when warm.
+- **Chemical contact:** sodium, potassium, lithium, and calcium react with aqueous liquids to release gas, heat, and sometimes explosions. Aluminum + rust makes thermite. Peroxide + silver releases oxygen. Bleach + acid or ammonia releases chlorine. Vinegar + baking soda fizzes. Cement hardens on hydration. Aqua regia consumes gold; acid curdles milk. Damp flour bakes; dry flour remains combustible dust.
+- **Heat and weather:** thermite burns intensely, napalm burns slowly, and fireworks and rocket fuel throw hot particles. Clouds rain from finite reserves; storm clouds also arc and acid clouds rain acid. Coolants spend thermal reserves. Water, salt, pollution, acidity, and radiation remain part of the surrounding ecosystem.
+- **Colonies:** growth requires a matching food material and spends or consumes it. Soil-fed growth needs moisture and nutrients; aquatic growth checks salinity and fertility. Mold eats organics, rust eaters consume rust, and powered nanites consume metals. Parent and child split their reserves, preventing unlimited free replication. Crystal seeds mineralize water; salt crystals extract salt. Bleach, antidote, and heat provide counterplay against infection.
+- **Forces and fantasy:** magnets move loose conductive matter; gravity wells pull loose matter; white holes push it away. Impulses carry modifiers and cannot move through occupied destination cells. Void dust consumes matter using a finite reserve. Antimatter detonates on unshielded matter. Ice nine spreads freezing through water and melts under strong heat. Mutagen turns organic neighbors into other functional organisms.
+
+All 200 materials retain stable byte IDs. There are four starters, 196 discoverable materials, and three separately discoverable life forms: 203 palette items total. Every unlock path is tested against the actual combiner. Large-area effects use a per-tick work budget and transient visual effects are capped, so dense reactions stay bounded.

@@ -4,13 +4,22 @@
 
 Run `npm test` for the simulation and ecology suites. They cover particle movement, dissolution/saturation, salt conservation, modifier transport, phase changes, burning, wet fuels, soil hydration, nutrients, pollution, acidity, corrosion, electrical conduction, plant lifecycles, human needs, fish habitats, mortality, and atomic save validation.
 
-Final result: **102 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 87 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
+Final result: **131 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 203 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
 
-Expansion tests cover all 84 stable material IDs, existing progression preservation, phase changes, finite filtering and neutralization, nutrient dissolution, absorption, rust, conductivity, pollution, soap foam, oxygen/fire suppression, hydrogen explosions, wet-fuel protection, aquatic growth salinity requirements, and deterministic save continuation with every material present.
+Expansion tests cover all 200 stable material IDs, existing progression preservation, phase changes, finite filtering and neutralization, nutrient dissolution, absorption, rust, conductivity, pollution, soap foam, oxygen/fire suppression, hydrogen explosions, wet-fuel protection, aquatic growth salinity requirements, and deterministic save continuation with every material present.
 
 The suites also verify version 1 save migration, exact deterministic continuation after restoring version 2, compressed save size, and a 1,000-tick full-size living-world run. `npm run build` checks TypeScript and produces a Vite production build.
 
 ## Browser verification
+
+### 200 materials and shared effects
+
+- Existing 15 discoveries were preserved in a 203-item palette. Played the new paths to Sodium, Cloud, Storm Cloud, and Uranium through normal combiner controls.
+- Dropped a large Storm Cloud: it emitted rain and electrical discharges. Dropped Sodium above the lake: contact produced visible fire and pressure bursts.
+- Placed Uranium while paused; the inspector reported radiation 50 and reserve 100%. The Radiation overlay highlighted the blob.
+- Saved the mixed world, reloaded the app, and loaded it successfully. Discovery progress persisted.
+- Checked the new Pressure overlay at 390 × 844: palette and combiner remained accessible, with no horizontal overflow. Desktop screenshots also verified the expanded inspector. No browser application errors were logged.
+- Automated checks include every discovery path, chemical reactions, shielded radiation, radioactivity transport, powered machinery, pressure confinement, finite colony/emitter reserves, impulse bounds, old-save migration, and deterministic mixed-world continuation. A full-size world with 4,800 mixed effect particles completed 240 ticks and remained saveable; the existing 1,000-tick ecology test also passed. These are regression checks, not a guarantee for every device or extreme combination.
 
 ### Material expansion
 

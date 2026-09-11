@@ -68,7 +68,9 @@ export function extendedStep(s: Simulation, i: number): boolean {
     f = s.fields,
     temp = f.temperature[i];
   const transition =
-    t.heatTransition && temp >= t.heatTransition.at
+    t.heatTransition &&
+    temp >= t.heatTransition.at &&
+    f.moisture[i] >= (t.heatTransition.minMoisture ?? 0)
       ? t.heatTransition
       : t.coldTransition && temp <= t.coldTransition.at
         ? t.coldTransition

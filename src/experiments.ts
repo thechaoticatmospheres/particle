@@ -212,5 +212,6 @@ export const milestoneLabels: Record<string, string> = {
   "plant-died": "A plant returned nutrients to the soil",
   "human-died": "A human could not survive these conditions",
   "fish-died": "A fish could not survive these conditions",
-  explosion: "Dry gunpowder exploded",
+  explosion: "A chain reaction erupted",
+  "pressure-burst": "Compressed matter burst free",
 };

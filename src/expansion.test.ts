@@ -15,11 +15,11 @@ const pair = (a: number, b: number) => {
   return s;
 };
 describe("expanded physical materials", () => {
-  it("has 80 unlockable materials, 60 additions, and stable unique byte IDs", () => {
-    expect(elements).toHaveLength(84);
-    expect(elements.length - starters.length).toBe(80);
+  it("has 196 unlockable materials, 60 additions, and stable unique byte IDs", () => {
+    expect(elements).toHaveLength(200);
+    expect(elements.length - starters.length).toBe(196);
     expect(expandedElements).toHaveLength(60);
-    expect(new Set(elements.map((e) => e.id)).size).toBe(84);
+    expect(new Set(elements.map((e) => e.id)).size).toBe(200);
     expect(elements.every((e) => e.id > 0 && e.id < 256)).toBe(true);
     expect(expandedTraits.every((e) => material[e.id].conductivity > 0)).toBe(
       true,
@@ -169,9 +169,9 @@ describe("expanded physical materials", () => {
     expect(salty.cells[211]).toBe(E.Kelp);
   });
   it("round-trips a world containing every material and continues deterministically", () => {
-    const s = new Simulation(100, 40);
+    const s = new Simulation(220, 40);
     elements.forEach((e, i) => s.set(i + 5, 15, e.id));
-    const restored = new Simulation(100, 40);
+    const restored = new Simulation(220, 40);
     restored.restore(JSON.parse(JSON.stringify(s.serialize())));
     expect(restored.serialize()).toEqual(s.serialize());
     for (let n = 0; n < 80; n++) {

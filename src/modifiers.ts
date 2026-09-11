@@ -13,6 +13,8 @@ export const modifierNames = [
   "burning",
   "vitality",
   "age",
+  "pressure",
+  "radiation",
 ] as const;
 export type ModifierName = (typeof modifierNames)[number];
 export type ModifierValues = Partial<Record<ModifierName, number>>;
@@ -28,6 +30,8 @@ export class Modifiers {
   burning: Uint16Array;
   vitality: Uint8Array;
   age: Uint16Array;
+  pressure: Uint8Array;
+  radiation: Uint8Array;
   constructor(size: number) {
     this.temperature = new Int16Array(size);
     this.salinity = new Uint16Array(size);
@@ -40,6 +44,8 @@ export class Modifiers {
     this.burning = new Uint16Array(size);
     this.vitality = new Uint8Array(size);
     this.age = new Uint16Array(size);
+    this.pressure = new Uint8Array(size);
+    this.radiation = new Uint8Array(size);
   }
   reset(i: number, id: number) {
     for (const key of modifierNames) this[key][i] = 0;
@@ -49,6 +55,9 @@ export class Modifiers {
     this.moisture[i] = t.defaultMoisture;
     this.fertility[i] = t.defaultFertility;
     this.pollution[i] = t.defaultPollution ?? 0;
+    this.acidity[i] = t.defaultAcidity ?? 0;
+    this.pressure[i] = t.defaultPressure ?? 0;
+    this.radiation[i] = t.defaultRadiation ?? 0;
     this.vitality[i] = 100;
     if (id === E.Salt) this.salinity[i] = 32;
     if (id === E.Acid) this.acidity[i] = 100;

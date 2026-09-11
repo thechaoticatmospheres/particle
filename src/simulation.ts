@@ -43,6 +43,15 @@ export class Simulation {
   plants: PlantColony[] = [];
   nextEntityId = 1;
   deaths = 0;
+  effects: {
+    x: number;
+    y: number;
+    radius: number;
+    color: string;
+    ttl: number;
+    kind: "ring" | "arc";
+  }[] = [];
+  effectBudget = 32;
   milestones = new Set<string>();
   onModifier: (key: string) => void = () => {};
   onDiscover: (id: number, recipe?: Recipe) => void = () => {};
@@ -97,6 +106,8 @@ export class Simulation {
       fertility: before.fertility,
       pollution: before.pollution,
       acidity: before.acidity,
+      pressure: before.pressure,
+      radiation: before.radiation,
       ...overrides,
     });
   }
@@ -122,6 +133,7 @@ export class Simulation {
     return spawnCreature(this, species, x, y);
   }
   clear() {
+    this.effects = [];
     this.cells.fill(0);
     this.life.fill(0);
     this.moved.fill(0);
@@ -157,7 +169,7 @@ export class Simulation {
         }
       }
   }
-  private swap(i: number, j: number) {
+  swap(i: number, j: number) {
     this.fields.swap(i, j);
     const c = this.cells[i],
       l = this.life[i];
@@ -201,7 +213,18 @@ export class Simulation {
     for (const id of r.products) if (id) this.onDiscover(id, r);
     return true;
   }
+  pulse(
+    x: number,
+    y: number,
+    radius: number,
+    color: string,
+    kind: "ring" | "arc" = "ring",
+  ) {
+    if (this.effects.length < 48)
+      this.effects.push({ x, y, radius, color, kind, ttl: 18 });
+  }
   explode(x: number, y: number, radius = 12) {
+    this.pulse(x, y, radius, "#ffad58");
     for (const c of this.creatures) {
       const distance = Math.hypot(c.x - x, c.y - y);
       if (distance < radius)
@@ -218,6 +241,8 @@ export class Simulation {
   }
   step() {
     this.tick++;
+    this.effectBudget = 32;
+    this.effects = this.effects.filter((e) => --e.ttl > 0);
     if (this.tick % 4 === 0) stepEnvironment(this);
     const w = this.width,
       h = this.height;
@@ -494,6 +519,12 @@ export class Simulation {
     } else {
       if (!s.fields) throw new Error("Missing modifiers");
       for (const key of modifierNames) {
+        // New condition fields are optional only for older version 2 saves.
+        if (
+          (key === "pressure" || key === "radiation") &&
+          s.fields[key] === undefined
+        )
+          continue;
         const max = ["age", "burning", "salinity"].includes(key)
           ? 65535
           : key === "temperature"

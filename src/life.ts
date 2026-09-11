@@ -61,7 +61,8 @@ export function isHabitable(s: Simulation, index: number, species: Species) {
     f.temperature[index] <= t.maxTemp &&
     f.pollution[index] <= t.maxPollution &&
     f.acidity[index] <= t.maxAcidity &&
-    f.charge[index] < 40
+    f.charge[index] < 40 &&
+    f.radiation[index] < 20
   );
 }
 export function spawnCreature(
@@ -153,6 +154,7 @@ function growPlants(s: Simulation) {
       f.moisture[root] >= 20 &&
       f.salinity[root] <= 10 &&
       f.pollution[root] < 35 &&
+      f.radiation[root] < 20 &&
       f.acidity[root] < 12 &&
       f.temperature[root] > 2 &&
       f.temperature[root] < 48;
@@ -461,6 +463,20 @@ export function stepLife(s: Simulation) {
   for (const c of s.creatures) {
     if (c.health <= 0) continue;
     c.age += 3;
+    const cell = Math.round(c.y) * s.width + Math.round(c.x);
+    if (cell >= 0 && cell < s.cells.length) {
+      const dose = Math.max(
+        s.fields.radiation[cell],
+        ...s.neighbors(cell).map((j) => s.fields.radiation[j]),
+      );
+      if (dose > 20) c.health = Math.max(0, c.health - dose / 100);
+      if (
+        s
+          .neighbors(cell)
+          .some((j) => s.cells[j] === E.Carnivore || s.cells[j] === E.Virus)
+      )
+        c.health = Math.max(0, c.health - 1);
+    }
     if (c.species === "human") updateHuman(s, c);
     else updateFish(s, c);
   }

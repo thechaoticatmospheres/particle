@@ -1,6 +1,7 @@
 import { E } from "./ids";
 export { E } from "./ids";
 import { expandedElements } from "./expansion";
+import { frontierElements } from "./frontier";
 export type Matter = "powder" | "liquid" | "solid" | "gas" | "energy";
 export type Category = "Nature" | "Liquids" | "Solids" | "Energy" | "Gases";
 export interface Element {
@@ -281,6 +282,7 @@ export const elements: Element[] = [
   },
 ];
 elements.push(...expandedElements);
+elements.push(...frontierElements);
 export const byId = new Map(elements.map((e) => [e.id, e]));
 export interface Recipe {
   a: number;

@@ -25,7 +25,7 @@ describe("four-element progression", () => {
       [...new Set(sim.cells)].every((id) => !id || starters.includes(id)),
     ).toBe(true);
   });
-  it("reaches all 87 palette items through the actual combiner from four starters", () => {
+  it("reaches all 203 palette items through the actual combiner from four starters", () => {
     const known = restoreProgress(null);
     for (let round = 0; round < allItems.length; round++) {
       const before = known.size;
@@ -38,7 +38,7 @@ describe("four-element progression", () => {
       if (known.size === before) break;
     }
     expect([...known].sort()).toEqual(allItems.map(itemKey).sort());
-    expect(known.size).toBe(87);
+    expect(known.size).toBe(203);
   });
   it("has a usable hint for every locked material and species", () => {
     for (const item of allItems) {

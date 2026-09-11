@@ -1,5 +1,42 @@
 import { E, elements } from "./elements";
 import { expandedTraits } from "./expansion";
+import { frontierTraits } from "./frontier";
+
+export interface Dynamics {
+  waterReaction?: {
+    gas: number;
+    heat: number;
+    burst?: number;
+    residue?: number;
+  };
+  contacts?: {
+    target: number;
+    product: number;
+    self?: number;
+    heat?: number;
+    burst?: number;
+  }[];
+  radiation?: number;
+  shield?: boolean;
+  source?: number;
+  powered?: "heat" | "cold" | "arc" | "magnet" | "repel" | "electrolysis";
+  force?: "pull" | "push" | "magnet" | "void";
+  range?: number;
+  thermal?: number;
+  emit?: { id: number; chance: number; cost: number; charged?: boolean };
+  colony?: {
+    food: "organic" | "soil" | "water" | "metal" | "rust" | "pollution";
+    product?: number;
+    minSalt?: number;
+    maxSalt?: number;
+    charged?: boolean;
+  };
+  mutate?: boolean;
+  cure?: boolean;
+  annihilate?: boolean;
+  pressureBurst?: number;
+  glow?: boolean;
+}
 
 /** Capabilities, not pairwise recipes. New materials opt into shared systems here. */
 export interface MaterialTraits {
@@ -19,7 +56,7 @@ export interface MaterialTraits {
   defaultFertility: number;
   defaultPollution?: number;
   viscosity?: number;
-  heatTransition?: { at: number; to: number };
+  heatTransition?: { at: number; to: number; minMoisture?: number };
   coldTransition?: { at: number; to: number };
   burnProduct?: number;
   expiresTo?: number;
@@ -34,6 +71,10 @@ export interface MaterialTraits {
   suppressant?: boolean;
   saltTolerance?: number;
   growth?: { substrate: "soil" | "water"; minSalt: number; maxSalt: number };
+  dynamics?: Dynamics;
+  defaultAcidity?: number;
+  defaultRadiation?: number;
+  defaultPressure?: number;
 }
 const defaults: MaterialTraits = {
   conductivity: 0.1,
@@ -143,6 +184,8 @@ export const material: MaterialTraits[] = Array.from({ length: 256 }, () => ({
 for (const element of elements)
   material[element.id] = { ...defaults, ...overrides[element.id] };
 for (const entry of expandedTraits)
+  material[entry.id] = { ...material[entry.base], ...entry.traits };
+for (const entry of frontierTraits)
   material[entry.id] = { ...material[entry.base], ...entry.traits };
 export const hasExtendedContact = material.map(
   (t) =>

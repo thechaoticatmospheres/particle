@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { Simulation } from "./simulation";
 import { byId, E } from "./elements";
-import { habitats, type Species } from "./materials";
+import { habitats, material, type Species } from "./materials";
 import type { ModifierValues } from "./modifiers";
 export type Overlay =
   | "natural"
@@ -10,7 +10,9 @@ export type Overlay =
   | "moisture"
   | "pollution"
   | "fertility"
-  | "charge";
+  | "charge"
+  | "pressure"
+  | "radiation";
 export interface Controls {
   dragging: boolean;
   selected: number;
@@ -183,7 +185,14 @@ export class WorldScene extends Phaser.Scene {
       else if (f.burning[i])
         color = [245, 125 + ((i + this.sim.tick) % 60), 48];
       else if (f.charge[i] > 50) color = [245, 225, 120];
-      else if (id === E.Water || id === E.Acid) {
+      else if (f.radiation[i] > 30) {
+        const dose = f.radiation[i] / 100;
+        color = [
+          color[0] * (1 - dose * 0.4),
+          color[1] * (1 - dose * 0.4) + 95 * dose,
+          color[2] * (1 - dose * 0.5),
+        ];
+      } else if (id === E.Water || id === E.Acid) {
         const salt = Math.min(1, f.salinity[i] / 70),
           pollution = f.pollution[i] / 100,
           acid = f.acidity[i] / 100;
@@ -206,6 +215,8 @@ export class WorldScene extends Phaser.Scene {
           (0.22 * (Math.sin((i % w) * 0.12 + this.sim.tick * 0.04) + 1)) / 2;
       if (id === E.Fire || id === E.Lava || id === E.Spark)
         light = 0.8 + (0.3 * ((i + this.sim.tick) % 9)) / 9;
+      if (material[id].dynamics?.glow)
+        light = 1.1 + 0.12 * Math.sin(this.sim.tick * 0.06 + i * 0.1);
       const alpha =
         id === E.Steam || id === E.Smoke ? 0.6 : id === E.Glass ? 0.65 : 1;
       for (let j = 0; j < 3; j++)
@@ -213,6 +224,23 @@ export class WorldScene extends Phaser.Scene {
           (color[j] * light + noise) * alpha + data[off + j] * (1 - alpha);
     }
     this.texture.context.putImageData(this.pixels, 0, 0);
+    const ctx = this.texture.context;
+    ctx.save();
+    for (const effect of this.sim.effects) {
+      ctx.globalAlpha = effect.ttl / 24;
+      ctx.strokeStyle = effect.color;
+      ctx.lineWidth = 0.65;
+      ctx.beginPath();
+      const radius = effect.radius * (1 - effect.ttl / 22);
+      if (effect.kind === "arc") {
+        ctx.moveTo(effect.x - radius, effect.y);
+        ctx.lineTo(effect.x - radius * 0.3, effect.y - 2);
+        ctx.lineTo(effect.x + radius * 0.2, effect.y + 2);
+        ctx.lineTo(effect.x + radius, effect.y);
+      } else ctx.arc(effect.x, effect.y, Math.max(0.5, radius), 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
     this.drawLife();
     this.texture.refresh();
     this.cursor.clear();
@@ -339,15 +367,19 @@ function overlayColor(mode: Overlay, value: number): number[] {
     value / (mode === "charge" ? 255 : mode === "salinity" ? 70 : 100),
   );
   const high =
-    mode === "salinity"
-      ? [203, 149, 242]
-      : mode === "moisture"
-        ? [70, 188, 247]
-        : mode === "pollution"
-          ? [211, 127, 89]
-          : mode === "fertility"
-            ? [141, 218, 101]
-            : [255, 222, 95];
+    mode === "radiation"
+      ? [165, 255, 100]
+      : mode === "pressure"
+        ? [222, 127, 255]
+        : mode === "salinity"
+          ? [203, 149, 242]
+          : mode === "moisture"
+            ? [70, 188, 247]
+            : mode === "pollution"
+              ? [211, 127, 89]
+              : mode === "fertility"
+                ? [141, 218, 101]
+                : [255, 222, 95];
   return high.map((v, n) => Math.round([26, 38, 52][n] * (1 - t) + v * t));
 }
 const colors: Record<number, number[]> = {};

@@ -2,6 +2,7 @@ import { byId, E, elements, recipes, starters } from "./elements";
 import { habitats, type Species } from "./materials";
 import type { PaletteItem } from "./combiner";
 import { expandedRecipes } from "./expansion";
+import { frontierRecipes } from "./frontier";
 
 export type ItemKey = number | Species;
 export const itemKey = (item: PaletteItem): ItemKey =>
@@ -32,6 +33,7 @@ export interface CraftRecipe {
 /** Abstract discovery recipes do not change the physical contact rules. */
 export const discoveryRecipes: CraftRecipe[] = [
   ...expandedRecipes,
+  ...frontierRecipes,
   {
     a: E.Stone,
     b: E.Sand,
