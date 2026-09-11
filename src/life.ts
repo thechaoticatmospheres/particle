@@ -152,7 +152,7 @@ export function germinate(s: Simulation, i: number) {
     height: 1,
     age: 0,
     health: 100,
-    maxHeight: 14 + Math.floor(s.random() * 10),
+    maxHeight: Math.max(1, Math.min(y - 2, 24 + Math.floor(s.random() * 16))),
     parts: [i],
     seedCooldown: 600,
   });
@@ -233,7 +233,7 @@ function growPlants(s: Simulation) {
       }
     if (!healthy) continue;
     if (p.age % 60 === 0) f.moisture[root] = Math.max(0, f.moisture[root] - 1);
-    const interval = f.fertility[root] > 45 ? 30 : 75;
+    const interval = f.fertility[root] > 45 ? 15 : 30;
     if (p.age % interval !== 0 || p.height >= p.maxHeight) continue;
     const topY = p.y - p.height;
     if (topY < 3) continue;
@@ -248,7 +248,7 @@ function growPlants(s: Simulation) {
         if (s.cells[i] === E.Plant) s.transform(i, E.Wood);
       }
     }
-    const radius = p.height > 7 ? 4 : 2;
+    const radius = p.height > 14 ? 7 : p.height > 7 ? 5 : 2;
     for (let dy = -2; dy <= 1; dy++)
       for (let dx = -radius; dx <= radius; dx++) {
         if ((dx * dx) / (radius * radius) + (dy * dy) / 5 > 1) continue;
@@ -262,7 +262,7 @@ function growPlants(s: Simulation) {
         p.parts.push(i);
       }
     p.height++;
-    f.moisture[root] = Math.max(0, f.moisture[root] - 2);
+    f.moisture[root] = Math.max(0, f.moisture[root] - 1);
     f.fertility[root] = Math.max(0, f.fertility[root] - 1);
     s.note("growing");
   }
@@ -608,10 +608,10 @@ export function validateLife(
       p.y >= height - 1 ||
       !Number.isInteger(p.height) ||
       p.height < 1 ||
-      p.height > 32 ||
+      p.height > 40 ||
       !Number.isInteger(p.maxHeight) ||
       p.maxHeight < 1 ||
-      p.maxHeight > 32 ||
+      p.maxHeight > 40 ||
       !Number.isFinite(p.health) ||
       p.health < 0 ||
       p.health > 100 ||

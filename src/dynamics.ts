@@ -90,6 +90,20 @@ export function dynamicContact(s: Simulation, a: number, b: number) {
     s.put(a, r.residue ?? 0);
     s.put(b, r.gas);
     f.temperature[b] = temp(r.heat);
+    if (r.burst) {
+      // A reactive metal releases a hot gas plume that can ignite nearby fuel.
+      const x = a % s.width,
+        y = Math.floor(a / s.width);
+      for (let dy = 1; dy <= 4; dy++)
+        for (const dx of [-1, 1]) {
+          const v = s.get(x + dx, y - dy);
+          if (v !== 0 && v !== E.Steam && v !== E.Fire) continue;
+          const j = (y - dy) * s.width + x + dx;
+          s.put(j, r.gas);
+          f.temperature[j] = temp(r.heat);
+          f.pressure[j] = 75;
+        }
+    }
     f.pressure[b] = 65;
     if (s.cells[a]) f.temperature[a] = temp(r.heat);
     s.pulse(a % s.width, Math.floor(a / s.width), r.burst ?? 4, "#e0edb0");

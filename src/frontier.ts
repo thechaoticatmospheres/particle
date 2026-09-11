@@ -62,7 +62,7 @@ const rows: Entry[] = [
     "Water triggers a hot hydrogen burst. Keep it dry or build a water trap.",
     {
       ...d({
-        waterReaction: { gas: E.Hydrogen, heat: 700, burst: 5, residue: E.Lye },
+        waterReaction: { gas: E.Hydrogen, heat: 900, burst: 9, residue: E.Lye },
       }),
       // Keep chemical identity when hot: generic molten metal would lose water reactivity.
     },
@@ -75,7 +75,7 @@ const rows: Entry[] = [
     "#c2a7e2",
     "An even larger violet water-triggered blast; nearby fuels can catch fire.",
     d({
-      waterReaction: { gas: E.Hydrogen, heat: 950, burst: 8, residue: E.Ash },
+      waterReaction: { gas: E.Hydrogen, heat: 1200, burst: 13, residue: E.Ash },
       glow: true,
     }),
   ),

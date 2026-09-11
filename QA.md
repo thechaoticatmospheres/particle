@@ -71,3 +71,9 @@ The suites also verify version 1 save migration, exact deterministic continuatio
 ## Scope
 
 This is a local, single-player sandbox with simplified chemistry and survival. Humans have basic individual movement and needs; this pass does not implement civilization building, detailed pathfinding, or fish reproduction. Real touch hardware and broad cross-browser performance have not been benchmarked.
+
+### Stronger effects and explicit lock controls
+
+- The combiner now has labeled Lock/Locked buttons. Repeated right-click attempts retain Water across a successful Steam recipe and a failed Stone recipe; left-click still selects Soil for painting.
+- Painted Soil then Plant in the ordinary starting world: one plant rooted and grew a visible canopy. A Sodium brush placed directly in the lake produced a visible eruption. No browser console errors appeared.
+- The full 143-test suite and production build pass with larger trees, compatible saves, and reactive-metal gas plumes.

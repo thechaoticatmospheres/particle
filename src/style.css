@@ -1130,3 +1130,24 @@ h3 {
     scroll-behavior: auto !important;
   }
 }
+
+.lab-slot {
+  flex-wrap: wrap;
+  padding: 5px 2px;
+}
+.pin-ingredient {
+  flex-basis: 100%;
+  justify-content: center;
+  gap: 4px;
+  min-height: 28px;
+  border: 1px solid #55564f;
+  border-radius: 4px;
+  font-size: 10px;
+}
+.pin-ingredient:hover {
+  background: #ffffff12;
+}
+.pin-ingredient[aria-pressed="true"] {
+  background: #d6c78c22;
+  border-color: #a99c62;
+}

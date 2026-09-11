@@ -43,7 +43,7 @@ The **Field guide** explains the environmental systems and lists all 20 modifier
 
 - Click/drag: paint. Right-click the world or **E**: erase particles and creatures. **B**: brush. **I**: inspect.
 - Drag palette items into the canvas to place a circular blob using the brush size (minimum radius 5). Drag two items into Combine for an automatic result. Right-click a palette item or combination result to add it to Combine immediately. Focus a palette item and press **C** for a keyboard alternative. **Escape** cancels a drag; dropping outside a target does nothing.
-- Click the lock icon beside a combiner ingredient to keep it in place. While pinned, left-click other palette items to try them immediately; click the lock again to resume painting. Clear resets both inputs and the pin.
+- Click the lock icon beside a combiner ingredient to keep it in place. While locked, right-click other palette items to try them immediately. Left-click always selects your brush; click Locked to release the ingredient. Clear resets both inputs and the pin.
 - Scroll or **[ / ]**: brush size. Toolbar: round/square brush, undo, pause, single tick, speed, clear, and fullscreen.
 - **Space**: pause/resume. Painting, adding life, and inspecting still work while paused.
 - Overlay selector: natural colors, temperature, salinity, moisture, pollution, fertility, or electricity.

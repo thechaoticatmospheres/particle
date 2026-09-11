@@ -58,7 +58,8 @@ describe("shared dramatic systems", () => {
     dynamicContact(s, 310, 311);
     expect(s.cells[310]).toBe(E.Lye);
     expect(s.cells[311]).toBe(E.Hydrogen);
-    expect(s.fields.temperature[311]).toBe(700);
+    expect(s.fields.temperature[311]).toBe(900);
+    expect(s.cells.filter((id) => id === E.Hydrogen).length).toBeGreaterThan(4);
     expect(s.fields.pressure[311]).toBe(65);
     expect(s.effects.length).toBeGreaterThan(0);
   });
