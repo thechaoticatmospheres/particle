@@ -154,3 +154,7 @@ All 200 materials retain stable byte IDs. There are four starters, 196 discovera
 - Lock either combiner ingredient to preserve its complete modifier state. Right-clicking other unlocked palette items then tries them against that ingredient automatically. Left-click always selects a brush.
 
 - Reactive-metal eruptions now release multiple hot gas particles, allowing the plume to participate in ignition and pressure reactions. Sodium and potassium have larger blast radii. Trees grow every 15 ticks on rich soil or 30 on poorer ground, reach up to 39 cells high where space permits, and form wider canopies. Each growth step consumes one moisture unit.
+
+## World discoveries
+
+Materials produced during simulation ticks now unlock their palette brushes, including transient products of chemistry, combustion, phase changes, and growth. Creating terrain, painting existing particles, and loading saved particles alone do not unlock anything. The combiner remains an alternative discovery route and unlocks creature brushes.

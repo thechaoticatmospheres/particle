@@ -4,7 +4,7 @@
 
 Run `npm test` for the simulation and ecology suites. They cover particle movement, dissolution/saturation, salt conservation, modifier transport, phase changes, burning, wet fuels, soil hydration, nutrients, pollution, acidity, corrosion, electrical conduction, plant lifecycles, human needs, fish habitats, mortality, and atomic save validation.
 
-Final result: **143 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 203 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
+Final result: **146 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 203 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
 
 Expansion tests cover all 200 stable material IDs, existing progression preservation, phase changes, finite filtering and neutralization, nutrient dissolution, absorption, rust, conductivity, pollution, soap foam, oxygen/fire suppression, hydrogen explosions, wet-fuel protection, aquatic growth salinity requirements, and deterministic save continuation with every material present.
 
@@ -77,3 +77,9 @@ This is a local, single-player sandbox with simplified chemistry and survival. H
 - The combiner now has labeled Lock/Locked buttons. Repeated right-click attempts retain Water across a successful Steam recipe and a failed Stone recipe; left-click still selects Soil for painting.
 - Painted Soil then Plant in the ordinary starting world: one plant rooted and grew a visible canopy. A Sodium brush placed directly in the lake produced a visible eruption. No browser console errors appeared.
 - The full 143-test suite and production build pass with larger trees, compatible saves, and reactive-metal gas plumes.
+
+### World reaction discoveries
+
+- Heat-created Brick and the Hydrogen/Lye products of Sodium touching Water emit material discovery events.
+- Painting, restoring existing particles, and ordinary particle movement do not emit discoveries.
+- The UI routes world events into the existing palette unlock, notification, and saved-progress path. All 146 regression tests and the production build pass.

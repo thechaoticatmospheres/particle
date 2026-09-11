@@ -55,6 +55,7 @@ export class Simulation {
   milestones = new Set<string>();
   onModifier: (key: string) => void = () => {};
   onDiscover: (id: number, recipe?: Recipe) => void = () => {};
+  private createdThisStep: Set<number> | null = null;
   private reactions = new Map<number, Recipe>();
   constructor(
     public width = 540,
@@ -87,6 +88,7 @@ export class Simulation {
       this.put(y * this.width + x, id);
   }
   put(i: number, id: number) {
+    if (id && this.cells[i] !== id) this.createdThisStep?.add(id);
     this.cells[i] = id;
     this.life[i] = byId.get(id)?.lifetime ?? 0;
     this.moved[i] = this.tick;
@@ -303,6 +305,16 @@ export class Simulation {
         }
   }
   step() {
+    const created = new Set<number>();
+    this.createdThisStep = created;
+    try {
+      this.advance();
+    } finally {
+      this.createdThisStep = null;
+    }
+    for (const id of created) this.onDiscover(id);
+  }
+  private advance() {
     this.tick++;
     this.effectBudget = 32;
     this.effects = this.effects.filter((e) => --e.ttl > 0);

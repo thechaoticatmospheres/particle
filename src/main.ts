@@ -417,7 +417,7 @@ function discover(key: ItemKey) {
   toast(`Discovered ${keyLabel(key)}. Added to the palette.`);
   chime();
 }
-// Physical reactions can create particles; only the combiner unlocks the palette.
+sim.onDiscover = (id) => discover(id);
 function chime() {
   if (muted) return;
   try {
@@ -465,7 +465,7 @@ function showJournal() {
     (item) => item.kind === "life" || !starters.includes(item.id),
   );
   dialog(
-    `<span class="eyebrow">DISCOVERIES</span><h2>${unlocked.size} / ${allItems.length} unlocked</h2><p class="modal-intro">Start with Sand, Water, Stone, and Fire. Combine two unlocked items to discover every other material and life form. Recipes below are game rules; physical reactions still depend on conditions.</p><div class="journal-progress"><span style="width:${(unlocked.size / allItems.length) * 100}%"></span></div><div class="journal-list">${entries
+    `<span class="eyebrow">DISCOVERIES</span><h2>${unlocked.size} / ${allItems.length} unlocked</h2><p class="modal-intro">Start with Sand, Water, Stone, and Fire. Create materials through world reactions to unlock them, or combine two unlocked items to discover materials and life forms. Recipes below are game rules; physical reactions still depend on conditions.</p><div class="journal-progress"><span style="width:${(unlocked.size / allItems.length) * 100}%"></span></div><div class="journal-list">${entries
       .map((item) => {
         const key = itemKey(item),
           found = unlocked.has(key),
@@ -614,7 +614,7 @@ $("#new-world").onclick = worldPicker;
 $("#journal-tab").onclick = showJournal;
 $("#help").onclick = () =>
   dialog(
-    `<span class="eyebrow">WELCOME, WORLD MAKER</span><h2>A sandbox for your curiosity.</h2><p class="modal-intro">Click a palette item to select it and draw in the world. Drag an item onto the canvas to place a blob, or drop two items into Combine for an immediate result. Click a result to paint it or drag it into the world. Right-click a palette item or result to add it to Combine. Keyboard: focus a palette item and press C. Every colored pixel is a particle you can change. There is no score, no wrong answer, and no rush.</p><div class="help-steps"><p><b>01 &nbsp; Make your mark.</b> Paint sand, water, stone, fire, and more. Right-click to erase. Scroll to change the brush size.</p><p><b>02 &nbsp; Let things meet.</b> Water and fire become steam. Seeds grow into plants when rooted in damp, healthy soil. Try dropping lava into the lake.</p><p><b>03 &nbsp; Follow the discoveries.</b> Start with four elements. Drop two unlocked items into Combine to unlock another material or life form. Discoveries are saved in this browser.</p></div><div class="shortcuts"><span><kbd>B</kbd> Brush</span><span><kbd>E</kbd> Erase</span><span><kbd>I</kbd> Inspect</span><span><kbd>Space</kbd> Pause</span><span><kbd>[ ]</kbd> Brush size</span><span><kbd>Ctrl Z</kbd> Undo</span></div><p class="modal-footnote">Save world stores one world locally. Element recipes are creative game rules, not real chemistry.</p>`,
+    `<span class="eyebrow">WELCOME, WORLD MAKER</span><h2>A sandbox for your curiosity.</h2><p class="modal-intro">Click a palette item to select it and draw in the world. Drag an item onto the canvas to place a blob, or drop two items into Combine for an immediate result. Click a result to paint it or drag it into the world. Right-click a palette item or result to add it to Combine. Keyboard: focus a palette item and press C. Every colored pixel is a particle you can change. There is no score, no wrong answer, and no rush.</p><div class="help-steps"><p><b>01 &nbsp; Make your mark.</b> Paint sand, water, stone, fire, and more. Right-click to erase. Scroll to change the brush size.</p><p><b>02 &nbsp; Let things meet.</b> Water and fire become steam. Seeds grow into plants when rooted in damp, healthy soil. Try dropping lava into the lake.</p><p><b>03 &nbsp; Follow the discoveries.</b> Start with four elements. Make a new material in the world to unlock its brush, or drop two unlocked items into Combine to discover materials and life forms. Discoveries are saved in this browser.</p></div><div class="shortcuts"><span><kbd>B</kbd> Brush</span><span><kbd>E</kbd> Erase</span><span><kbd>I</kbd> Inspect</span><span><kbd>Space</kbd> Pause</span><span><kbd>[ ]</kbd> Brush size</span><span><kbd>Ctrl Z</kbd> Undo</span></div><p class="modal-footnote">Save world stores one world locally. Element recipes are creative game rules, not real chemistry.</p>`,
   );
 $("#sound").onclick = () => {
   muted = !muted;

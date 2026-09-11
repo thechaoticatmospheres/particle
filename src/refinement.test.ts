@@ -9,6 +9,44 @@ const item = (id: number): PaletteItem => ({ kind: "material", id });
 const run = (s: Simulation, n: number) => {
   for (let t = 0; t < n; t++) s.step();
 };
+
+describe("world discoveries", () => {
+  it("reports products of heat transformations", () => {
+    const s = new Simulation(30, 30);
+    const found = new Set<number>();
+    s.onDiscover = (id) => {
+      found.add(id);
+    };
+    s.set(15, 15, E.Clay);
+    s.fields.temperature[465] = 600;
+    run(s, 4);
+    expect(found.has(E.Brick)).toBe(true);
+  });
+  it("reports reactive metal products created directly by chemistry", () => {
+    const s = new Simulation(30, 30);
+    const found = new Set<number>();
+    s.onDiscover = (id) => {
+      found.add(id);
+    };
+    s.set(15, 15, E.Sodium);
+    s.set(15, 14, E.Water);
+    s.step();
+    expect(found.has(E.Hydrogen)).toBe(true);
+    expect(found.has(E.Lye)).toBe(true);
+  });
+  it("does not discover particles merely from painting, loading, or movement", () => {
+    const s = new Simulation(30, 30);
+    const found = new Set<number>();
+    s.onDiscover = (id) => {
+      found.add(id);
+    };
+    s.paint(15, 5, E.Glass, 2);
+    s.set(5, 5, E.Sand);
+    s.restore(s.serialize());
+    run(s, 10);
+    expect(found.size).toBe(0);
+  });
+});
 describe("combiner pinning", () => {
   it("keeps the full modified ingredient through successful and failed attempts", () => {
     const pinned: PaletteItem = {
@@ -170,3 +208,4 @@ describe("visible physical interactions", () => {
     expect(restored.cells[315]).toBe(E.Plant);
   });
 });
+

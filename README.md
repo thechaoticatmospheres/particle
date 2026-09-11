@@ -4,14 +4,14 @@ A single-player particle sandbox built with **Phaser 3, TypeScript, and Vite**. 
 
 ## Discovery progression
 
-Only four items are initially available. All 199 others require combining two unlocked items; the complete graph is verified by tests against the actual combiner. Examples:
+Only four items are initially available. The other 199 items can be discovered through the combiner, and materials created by world reactions also unlock; the complete graph is verified by tests against the actual combiner. Examples:
 
 - Stone + Sand → Soil; Soil + Water → Mud; Soil + Mud → Seed.
 - Seed + Water → Plant; Plant + Plant → Wood.
 - Plant + Water → Freshwater fish; Freshwater fish + Salt → Saltwater fish.
 - Mud + Plant → Human.
 
-Click a locked item or open Discoveries for its recipe. Natural world reactions do not unlock palette items. Existing version 3 discoveries are preserved; the 116 new materials start locked. Older legacy saves can restore their world but cannot grant old starter unlocks. The Living lab preset becomes available after unlocking all 203 items.
+Click a locked item or open Discoveries for its recipe. Natural world reactions unlock the materials they create, including heat transformations, burning, growth, and chemical products. Painting, terrain generation, and loading existing particles do not grant discoveries by themselves. Existing version 3 discoveries are preserved; the 116 new materials start locked. Older legacy saves can restore their world but cannot grant old starter unlocks. The Living lab preset becomes available after unlocking all 203 items.
 
 ## Hosting
 
