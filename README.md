@@ -39,6 +39,8 @@ Open the local URL from Vite. `npm run preview` serves the production build.
 
 The **Field guide** explains the environmental systems and lists all 20 modifier experiments. See [INTERACTIONS.md](INTERACTIONS.md) for the complete mechanics.
 
+Click **Hint** beside Combine for a new recipe using ingredients you already own. It prioritizes the locked ingredient and cycles through suggestions without unlocking anything automatically.
+
 ## Controls
 
 - Click/drag: paint. Right-click the world or **E**: erase particles and creatures. **B**: brush. **I**: inspect.

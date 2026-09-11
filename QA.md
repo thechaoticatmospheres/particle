@@ -4,7 +4,7 @@
 
 Run `npm test` for the simulation and ecology suites. They cover particle movement, dissolution/saturation, salt conservation, modifier transport, phase changes, burning, wet fuels, soil hydration, nutrients, pollution, acidity, corrosion, electrical conduction, plant lifecycles, human needs, fish habitats, mortality, and atomic save validation.
 
-Final result: **146 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 203 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
+Final result: **148 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 203 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
 
 Expansion tests cover all 200 stable material IDs, existing progression preservation, phase changes, finite filtering and neutralization, nutrient dissolution, absorption, rust, conductivity, pollution, soap foam, oxygen/fire suppression, hydrogen explosions, wet-fuel protection, aquatic growth salinity requirements, and deterministic save continuation with every material present.
 
@@ -83,3 +83,8 @@ This is a local, single-player sandbox with simplified chemistry and survival. H
 - Heat-created Brick and the Hydrogen/Lye products of Sodium touching Water emit material discovery events.
 - Painting, restoring existing particles, and ordinary particle movement do not emit discoveries.
 - The UI routes world events into the existing palette unlock, notification, and saved-progress path. All 146 regression tests and the production build pass.
+
+### Discovery hints
+
+- Hint suggests unknown products from actually unlocked ingredients and checks real combiner results. Tests confirm hints can guide progression to all 203 items and prefer a locked ingredient.
+- Browser check showed Lava + Sand for Glass, then Uranium + Water for Heavy Water with Water locked. The button and hint text fit the combiner.

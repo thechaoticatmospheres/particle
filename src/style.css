@@ -1151,3 +1151,17 @@ h3 {
   background: #d6c78c22;
   border-color: #a99c62;
 }
+
+.hint-button {
+  margin-left: auto;
+  padding: 4px 9px;
+  border: 1px solid #55564f;
+  border-radius: 4px;
+  background: transparent;
+  color: #e9d58f;
+  font: inherit;
+  cursor: pointer;
+}
+.hint-button:hover {
+  background: #d6c78c22;
+}

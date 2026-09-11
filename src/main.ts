@@ -1,4 +1,5 @@
 import "./style.css";
+import { availableHints } from "./hints";
 import { ui } from "./ui";
 import { combine, worldPoint, type PaletteItem } from "./combiner";
 import {
@@ -373,6 +374,23 @@ function setTool(tool: Controls["tool"]) {
       b.setAttribute("aria-pressed", String(selected));
     });
 }
+let hintIndex = 0;
+$("#lab-hint").addEventListener("click", () => {
+  const preferred = pinnedIngredient ? itemKey(pinnedIngredient) : undefined;
+  const hints = availableHints(unlocked, preferred);
+  if (!hints.length) {
+    $("#lab-message").textContent =
+      "Every palette item discovered! Try experimenting in the world.";
+    return;
+  }
+  const hint = hints[hintIndex++ % hints.length];
+  const reset =
+    preferred !== undefined && hint.a !== preferred && hint.b !== preferred
+      ? "No new recipes for the locked ingredient. Clear the combiner, then try "
+      : "Try ";
+  $("#lab-message").textContent =
+    `${reset}${keyLabel(hint.a)} + ${keyLabel(hint.b)} → ${hint.products.map(keyLabel).join(" + ")}. Right-click the ingredients to combine. Click Hint for another idea.`;
+});
 function renderLab() {
   document.querySelectorAll<HTMLElement>("[data-slot]").forEach((slot, i) => {
     slot.innerHTML = lab[i]
