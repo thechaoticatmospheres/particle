@@ -366,6 +366,33 @@ summary::-webkit-details-marker {
 .lab-slot.filled {
   color: var(--text);
 }
+.lab-slot.pinned {
+  border-radius: 6px;
+  background: #d6c78c16;
+  outline: 1px solid #d6c78c66;
+}
+.pin-ingredient {
+  display: flex;
+  align-items: center;
+  padding: 3px;
+  border: 0;
+  background: transparent;
+  color: #9b9a90;
+  cursor: pointer;
+}
+.pin-ingredient[aria-pressed="true"] {
+  color: #e9d58f;
+}
+.lab-slot .pin-ingredient svg {
+  width: 13px;
+  height: 13px;
+}
+.inspection-panel .growth-status {
+  grid-column: 1 / -1;
+  color: #c7dfaa;
+  padding-top: 5px;
+  max-width: 260px;
+}
 .lab-slot span {
   max-width: 60px;
 }

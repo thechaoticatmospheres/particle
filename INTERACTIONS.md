@@ -144,3 +144,11 @@ These are simplified game rules. Discovery pairs remain separate from the condit
 - **Forces and fantasy:** magnets move loose conductive matter; gravity wells pull loose matter; white holes push it away. Impulses carry modifiers and cannot move through occupied destination cells. Void dust consumes matter using a finite reserve. Antimatter detonates on unshielded matter. Ice nine spreads freezing through water and melts under strong heat. Mutagen turns organic neighbors into other functional organisms.
 
 All 200 materials retain stable byte IDs. There are four starters, 196 discoverable materials, and three separately discoverable life forms: 203 palette items total. Every unlock path is tested against the actual combiner. Large-area effects use a per-tick work budget and transient visual effects are capped, so dense reactions stay bounded.
+
+## Interaction refinement
+
+- Palette painting and blobs can inject particles directly into liquids and gases while preserving solid terrain. Displaced fluid moves to a free neighboring cell when possible.
+- Sodium checks water contact every tick and retains its reactivity when hot. Larger clusters cause larger eruptions. Blasts flash water into steam, fracture susceptible terrain, and prime nearby explosive charges for delayed chain reactions.
+- Unrooted Plant settles onto rootable ground, including watered sand. Rooted plants build anchored woody canopies. Roots draw finite moisture and nutrients from nearby ground; transported water carries salt, acidity, pollution, and radiation. Inspect reports dry, salty, poisoned, temperature-stressed, growing, or mature conditions. Existing saved canopies remain anchored.
+- Soil-fed and water-fed colonies replenish vitality by consuming nutrients from suitable wet ground or water. Exhausted or unsuitable environments stop renewal.
+- Lock either combiner ingredient to preserve its complete modifier state. Clicking other unlocked palette items then tries them against that ingredient automatically. Unlocking restores ordinary paint selection.

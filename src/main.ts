@@ -14,6 +14,9 @@ import {
 } from "./crafting";
 import { generateStartingWorld } from "./starting-world";
 import { enablePaletteDrag } from "./palette-drag";
+import { nextLabInput } from "./lab-input";
+import { growthStatus } from "./life";
+
 import { elements, byId, starters, E } from "./elements";
 import { Simulation, type WorldSave } from "./simulation";
 import { bootWorld, type Controls, type Overlay } from "./scene";
@@ -21,6 +24,7 @@ import { icon, elementIcon, refreshIcons } from "./icons";
 import { habitats, material, type Species } from "./materials";
 import { modifierExperiments, milestoneLabels } from "./experiments";
 
+let pinnedIngredient: PaletteItem | null = null;
 function $(s: "#modal"): HTMLDialogElement;
 function $<T extends HTMLElement = HTMLElement>(s: string): T;
 function $(s: string) {
@@ -159,6 +163,12 @@ function inspect(x: number, y: number) {
     f.pressure[i] > 50 ? "Pressurized" : "",
   ].filter(Boolean);
   panel.innerHTML = `<strong>${byId.get(id)!.name}${tags.length ? " · " + tags.join(", ") : ""}</strong><span>Temperature <b>${f.temperature[i]}°C</b></span><span>Salt <b>${f.salinity[i]}</b></span><span>Moisture <b>${f.moisture[i]}%</b></span><span>Nutrients <b>${f.fertility[i]}%</b></span><span>Pollution <b>${f.pollution[i]}%</b></span><span>Acidity <b>${f.acidity[i]}%</b></span><span>Charge <b>${f.charge[i]}</b></span><span>Pressure <b>${f.pressure[i]}</b></span><span>Radiation <b>${f.radiation[i]}</b></span><span>Reserve <b>${f.vitality[i]}%</b></span>${f.corrosion[i] ? `<span>Corrosion <b>${f.corrosion[i]}%</b></span>` : ""}`;
+  if (
+    id === E.Seed ||
+    id === E.Plant ||
+    (id === E.Wood && sim.plants.some((p) => p.parts.includes(i)))
+  )
+    panel.innerHTML += `<span class="growth-status">${growthStatus(sim, i)}</span>`;
 }
 function showPopulation() {
   dialog(
@@ -167,7 +177,7 @@ function showPopulation() {
 }
 function showFieldGuide() {
   dialog(
-    `<span class="eyebrow">FIELD GUIDE</span><h2>Make the world react.</h2><p class="modal-intro">Water can be salty, hot, polluted, acidic, or charged at the same time. These properties move with particles and affect the whole ecosystem. Use the overlay menu and Inspect (I) to see them.</p><div class="help-steps"><p><b>Water & salt</b>Salt dissolves and diffuses. Freshwater fish tolerate salinity 0–9; saltwater fish need 12–70. Humans drink clean water at 0–7. Boiling leaves salt and pollutants behind.</p><p><b>Living plants</b>Place seeds on damp soil (moisture 28%+). Nutrients accelerate growth. Roots draw water from the ground, mature plants reseed, and salt, acid, pollution, or drought can kill them.</p><p><b>Heat & fire</b>Heat conducts through neighboring particles. Water boils, freezes, and quenches lava. Wet wood and gunpowder must dry before burning. Fire needs exposed fuel; burned material returns nutrients as ash.</p><p><b>Electricity & corrosion</b>Sparks send short pulses through metal and water. Salt improves conduction and accelerates metal rust. Acid gradually corrodes susceptible materials; ash and fertile soil neutralize it.</p><p><b>People & habitats</b>Humans walk, climb small steps, forage, seek safe drinking water, and swim for air. Fish seek suitable water. Heat, cold, toxins, shocks, starvation, and suffocation affect survival.</p></div><h3>Build a chain reaction</h3><div class="help-steps"><p><b>Water traps</b>Drop Sodium into Water for a hot hydrogen burst. Add flammable gas around the trap to extend the reaction. Stone and concrete contain weaker bursts.</p><p><b>Powered machines</b>Touch a Battery to Copper, then connect a Heater, Cooler, Electrode, or Tesla coil. Batteries run down; Solar cells work beneath open sky. Electrodes split water into gases that sparks can ignite.</p><p><b>Radiation & mutation</b>Uranium irradiates particles along short rays. Lead and Neutronium block those rays. Water carries contamination, organisms can mutate, and Antidote cleans up a limited amount. Check the Radiation overlay before adding fish.</p><p><b>Pressure</b>Gas trapped on four sides builds pressure. At 85 it bursts, shifts loose matter, and fractures weak walls. Strong containment survives. Open a vent or use the Pressure overlay to track it.</p><p><b>Growing hazards</b>Mold consumes organics; powered Nanites consume metals; Coral needs salty, nutrient-rich water. Colonies split their reserves as they spread. Ice nine freezes touching water, but strong heat stops it. Bleach and Antidote stop infection.</p><p><b>Weather & forces</b>Clouds rain from finite reserves. Storm clouds also arc; Acid clouds corrode what they rain on. Magnets pull loose conductors; Gravity wells pull all loose matter, while White holes push it away. Walls still block particle movement.</p></div><h3>Experiment with modifiers</h3><div class="modifier-recipes">${modifierExperiments.map((r) => `<div><strong>${byId.get(r.a)!.name} + ${byId.get(r.b)!.name}</strong><span>${r.label}</span></div>`).join("")}</div><p class="modal-footnote">The lab previews an interaction and prepares a brush with the resulting properties. Real-world reactions take time and depend on concentration, temperature, and contact. Salinity is a game-scale concentration, not a scientific unit.</p>`,
+    `<span class="eyebrow">FIELD GUIDE</span><h2>Make the world react.</h2><p class="modal-intro">Water can be salty, hot, polluted, acidic, or charged at the same time. These properties move with particles and affect the whole ecosystem. Use the overlay menu and Inspect (I) to see them.</p><div class="help-steps"><p><b>Water & salt</b>Salt dissolves and diffuses. Freshwater fish tolerate salinity 0–9; saltwater fish need 12–70. Humans drink clean water at 0–7. Boiling leaves salt and pollutants behind.</p><p><b>Living plants</b>Drop Seed or Plant onto damp soil or watered sand (moisture 28%+). Plants settle, root, and grow woody canopies. Roots draw water and nutrients from nearby ground, carrying salt and toxins too. Inspect a plant to see what is stopping growth. Mature plants reseed.</p><p><b>Heat & fire</b>Heat conducts through neighboring particles. Water boils, freezes, and quenches lava. Wet wood and gunpowder must dry before burning. Fire needs exposed fuel; burned material returns nutrients as ash.</p><p><b>Electricity & corrosion</b>Sparks send short pulses through metal and water. Salt improves conduction and accelerates metal rust. Acid gradually corrodes susceptible materials; ash and fertile soil neutralize it.</p><p><b>People & habitats</b>Humans walk, climb small steps, forage, seek safe drinking water, and swim for air. Fish seek suitable water. Heat, cold, toxins, shocks, starvation, and suffocation affect survival.</p></div><h3>Keep experimenting</h3><p>Right-click or drag an ingredient into Combine, then click its lock icon. While it is pinned, click other palette items to try combinations immediately. Unlock it to resume painting, or clear the lab to reset both slots.</p><h3>Build a chain reaction</h3><div class="help-steps"><p><b>Water traps</b>Drop Sodium into Water for a hot hydrogen burst. Add flammable gas around the trap to extend the reaction. Stone and concrete contain weaker bursts.</p><p><b>Powered machines</b>Touch a Battery to Copper, then connect a Heater, Cooler, Electrode, or Tesla coil. Batteries run down; Solar cells work beneath open sky. Electrodes split water into gases that sparks can ignite.</p><p><b>Radiation & mutation</b>Uranium irradiates particles along short rays. Lead and Neutronium block those rays. Water carries contamination, organisms can mutate, and Antidote cleans up a limited amount. Check the Radiation overlay before adding fish.</p><p><b>Pressure</b>Gas trapped on four sides builds pressure. At 85 it bursts, shifts loose matter, and fractures weak walls. Strong containment survives. Open a vent or use the Pressure overlay to track it.</p><p><b>Growing hazards</b>Mold consumes organics; powered Nanites consume metals; Coral needs salty, nutrient-rich water. Colonies split their reserves as they spread. Ice nine freezes touching water, but strong heat stops it. Bleach and Antidote stop infection.</p><p><b>Weather & forces</b>Clouds rain from finite reserves. Storm clouds also arc; Acid clouds corrode what they rain on. Magnets pull loose conductors; Gravity wells pull all loose matter, while White holes push it away. Walls still block particle movement.</p></div><h3>Experiment with modifiers</h3><div class="modifier-recipes">${modifierExperiments.map((r) => `<div><strong>${byId.get(r.a)!.name} + ${byId.get(r.b)!.name}</strong><span>${r.label}</span></div>`).join("")}</div><p class="modal-footnote">The lab previews an interaction and prepares a brush with the resulting properties. Real-world reactions take time and depend on concentration, temperature, and contact. Salinity is a game-scale concentration, not a scientific unit.</p>`,
   );
 }
 function itemLabel(item: PaletteItem) {
@@ -256,8 +266,7 @@ function selectElement(id: number) {
 }
 function addToLab(item: PaletteItem) {
   if (!unlocked.has(itemKey(item))) return;
-  if (lab.length === 2) lab = [];
-  lab.push(item);
+  lab = nextLabInput(lab, item, pinnedIngredient);
   results = [];
   if (lab.length === 2) {
     const reaction = combine(lab[0], lab[1]);
@@ -265,7 +274,9 @@ function addToLab(item: PaletteItem) {
     results.forEach((result) => {
       discover(itemKey(result));
     });
-    $("#lab-message").textContent = reaction.message;
+    $("#lab-message").textContent = pinnedIngredient
+      ? `${results.length ? results.map(itemLabel).join(" + ") : "No reaction"}. ${itemLabel(pinnedIngredient)} pinned — click another element to try it.`
+      : reaction.message;
   } else $("#lab-message").textContent = "One more element to combine.";
   renderLab();
 }
@@ -281,7 +292,7 @@ function palettePayload(node: HTMLElement): PaletteItem | null {
 }
 enablePaletteDrag({
   payload: palettePayload,
-  select: selectItem,
+  select: (item) => (pinnedIngredient ? addToLab(item) : selectItem(item)),
   combine: addToLab,
   dragging: (value) => {
     controls.dragging = value;
@@ -332,6 +343,7 @@ $("#element-grid").addEventListener("click", (e) => {
   );
 });
 $("#clear-lab").onclick = () => {
+  pinnedIngredient = null;
   lab = [];
   results = [];
   renderLab();
@@ -364,18 +376,30 @@ function setTool(tool: Controls["tool"]) {
 function renderLab() {
   document.querySelectorAll<HTMLElement>("[data-slot]").forEach((slot, i) => {
     slot.innerHTML = lab[i]
-      ? `${itemIcon(lab[i], 22)}<span>${itemLabel(lab[i])}</span>`
+      ? `${itemIcon(lab[i], 22)}<span>${itemLabel(lab[i])}</span><button class="pin-ingredient" data-pin="${i}" aria-label="${pinnedIngredient === lab[i] ? "Unpin" : "Pin"} ${itemLabel(lab[i])}" aria-pressed="${pinnedIngredient === lab[i]}" title="${pinnedIngredient === lab[i] ? "Unpin to resume painting" : "Keep this ingredient while trying others"}">${icon(pinnedIngredient === lab[i] ? "lock" : "lock-open")}</button>`
       : "<span>Drop element</span>";
     slot.classList.toggle("filled", !!lab[i]);
+    slot.classList.toggle("pinned", !!lab[i] && pinnedIngredient === lab[i]);
   });
   $("#lab-result").innerHTML = results
     .map(
       (item, i) =>
-        `<button class="result-chip" data-palette="result-${i}" aria-label="${itemLabel(item)} result" title="Click to paint. Drag to place or combine. Right-click or C to combine.">${itemIcon(item, 22)}<span>${itemLabel(item)}</span>${icon("arrow-right")}</button>`,
+        `<button class="result-chip" data-palette="result-${i}" aria-label="${itemLabel(item)} result" title="${pinnedIngredient ? "Click to try with the pinned ingredient." : "Click to paint."} Drag to place or combine. Right-click or C to combine.">${itemIcon(item, 22)}<span>${itemLabel(item)}</span>${icon("arrow-right")}</button>`,
     )
     .join("");
   refreshIcons();
 }
+$("#lab-drop").addEventListener("click", (e) => {
+  const button = (e.target as HTMLElement).closest<HTMLElement>("[data-pin]");
+  if (!button) return;
+  const item = lab[Number(button.dataset.pin)];
+  if (!item) return;
+  pinnedIngredient = pinnedIngredient === item ? null : item;
+  $("#lab-message").textContent = pinnedIngredient
+    ? `${itemLabel(item)} pinned. Click palette elements to try combinations. Unpin to paint.`
+    : "Unpinned. Click an element to paint, or right-click to combine.";
+  renderLab();
+});
 function toast(message: string) {
   clearTimeout(toastTimer);
   $("#toast").textContent = message;

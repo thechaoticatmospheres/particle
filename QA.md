@@ -4,13 +4,21 @@
 
 Run `npm test` for the simulation and ecology suites. They cover particle movement, dissolution/saturation, salt conservation, modifier transport, phase changes, burning, wet fuels, soil hydration, nutrients, pollution, acidity, corrosion, electrical conduction, plant lifecycles, human needs, fish habitats, mortality, and atomic save validation.
 
-Final result: **131 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 203 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
+Final result: **143 tests passed**. The production build passed TypeScript validation and Vite compilation. The combination and progression suites cover the four exact starters, all 203 items reachable through the actual combiner, recipe hints, life unlocks, old-save isolation, chained modifier inheritance, multiple products, terrain-preserving blob placement, and canvas boundary mapping.
 
 Expansion tests cover all 200 stable material IDs, existing progression preservation, phase changes, finite filtering and neutralization, nutrient dissolution, absorption, rust, conductivity, pollution, soap foam, oxygen/fire suppression, hydrogen explosions, wet-fuel protection, aquatic growth salinity requirements, and deterministic save continuation with every material present.
 
 The suites also verify version 1 save migration, exact deterministic continuation after restoring version 2, compressed save size, and a 1,000-tick full-size living-world run. `npm run build` checks TypeScript and produces a Vite production build.
 
 ## Browser verification
+
+### Pinned combining and deeper interactions
+
+- Pinned Water, clicked Fire for Steam, then Stone for a failed combination; Water remained pinned throughout. Salt produced modified water with the same pinned input. The lock icon rendered correctly.
+- Unpinning restored ordinary paint selection. At 390 × 844, the lock remained usable and the page had no horizontal overflow.
+- Dropped Plant above damp Soil: six plants rooted and grew visible woody canopies; Inspect reported the mature/reseeding state.
+- Dropped Sodium directly into the lake and resumed simulation: a visible blast and steam plume appeared, and the reactive-metal milestone fired.
+- Regression tests cover direct fluid placement, preserved solid terrain, hot Sodium reactivity, delayed explosive chains, watered-sand growth, root contamination conservation, all three colony update phases, and deterministic saves with growing plants.
 
 ### Right-click combining
 

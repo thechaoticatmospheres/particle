@@ -77,7 +77,16 @@ export function dynamicContact(s: Simulation, a: number, b: number) {
   if (d.waterReaction && u.aqueous && s.effectBudget > 0) {
     const r = d.waterReaction;
     s.effectBudget--;
-    if (r.burst) s.explode(a % s.width, Math.floor(a / s.width), r.burst);
+    if (r.burst) {
+      const x = a % s.width,
+        y = Math.floor(a / s.width);
+      let cluster = 0;
+      for (let dy = -2; dy <= 2; dy++)
+        for (let dx = -2; dx <= 2; dx++)
+          if (s.get(x + dx, y + dy) === id) cluster++;
+      s.explode(x, y, r.burst + Math.min(5, Math.floor(cluster / 3)));
+      s.note("water-reactive");
+    }
     s.put(a, r.residue ?? 0);
     s.put(b, r.gas);
     f.temperature[b] = temp(r.heat);
@@ -335,6 +344,30 @@ export function stepDynamics(s: Simulation, i: number) {
     }
   }
   const c = d.colony;
+  // Living colonies can recover by eating real nutrients; exhausted ground stops renewal.
+  if (
+    c &&
+    (c.food === "soil" || c.food === "water") &&
+    (s.tick - (i % 3) * 4) % 60 === 0 &&
+    f.vitality[i] < 80
+  ) {
+    const source = near.find((j) => {
+      const u = material[s.cells[j]];
+      return (
+        (c.food === "soil" ? u.soil && f.moisture[j] >= 20 : u.aqueous) &&
+        f.fertility[j] >= 8 &&
+        f.pollution[j] < 30 &&
+        f.acidity[j] < 15 &&
+        f.salinity[j] >= (c.minSalt ?? 0) &&
+        f.salinity[j] <= (c.maxSalt ?? 15)
+      );
+    });
+    if (source !== undefined) {
+      f.fertility[source] -= 8;
+      f.vitality[i] = Math.min(100, f.vitality[i] + 16);
+      f.moisture[i] = Math.min(100, f.moisture[i] + 4);
+    }
+  }
   if (
     c &&
     (!c.charged || powered) &&

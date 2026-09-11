@@ -192,7 +192,7 @@ export const elements: Element[] = [
     state: "solid",
     density: 8,
     description:
-      "Roots in damp soil, grows branches, and releases seeds at maturity. Drought, salt, acid, and pollution can kill it.",
+      "Settles onto damp soil or watered sand, grows woody branches, and releases seeds at maturity. Drought, salt, acid, and pollution can kill it.",
   },
   {
     id: 17,

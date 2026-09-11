@@ -64,7 +64,7 @@ const rows: Entry[] = [
       ...d({
         waterReaction: { gas: E.Hydrogen, heat: 700, burst: 5, residue: E.Lye },
       }),
-      ...melt(100),
+      // Keep chemical identity when hot: generic molten metal would lose water reactivity.
     },
   ),
   row(

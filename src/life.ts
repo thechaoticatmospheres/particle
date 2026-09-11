@@ -103,18 +103,39 @@ export function spawnCreature(
   s.creatures.push(creature);
   return creature;
 }
+const rootable = (id: number) =>
+  !!(material[id]?.rootable || material[id]?.soil);
+export function growthStatus(s: Simulation, i: number): string {
+  const p = s.plants.find((p) => p.parts.includes(i));
+  const root = p ? (p.y + 1) * s.width + p.x : i + s.width,
+    f = s.fields;
+  if (root >= s.cells.length || !rootable(s.cells[root]))
+    return "Needs damp soil or watered sand underneath";
+  if (f.salinity[root] > 10) return "Too salty — irrigate with fresh water";
+  if (f.acidity[root] > 12 || f.pollution[root] > 35 || f.radiation[root] >= 20)
+    return "Roots are poisoned — replace or clean the ground";
+  if (f.temperature[i] < 4 || f.temperature[i] > 45)
+    return "Too hot or cold to grow";
+  if (f.moisture[root] < (p ? 20 : 28)) return "Thirsty — water the roots";
+  return p
+    ? p.height >= p.maxHeight
+      ? "Mature — will release seeds"
+      : `Growing · ${p.height}/${p.maxHeight} height${f.fertility[root] < 30 ? " · add nutrients for faster growth" : ""}`
+    : "Ready to take root";
+}
 export function germinate(s: Simulation, i: number) {
   if (s.plants.length >= 180) return false;
   const x = i % s.width,
     y = Math.floor(i / s.width),
     root = i + s.width;
-  if (y >= s.height - 1 || !material[s.cells[root]].soil) return false;
+  if (y >= s.height - 1 || !rootable(s.cells[root])) return false;
   const f = s.fields;
   if (
     f.moisture[root] < 28 ||
     f.salinity[root] > 10 ||
     f.acidity[root] > 12 ||
     f.pollution[root] > 35 ||
+    f.radiation[root] >= 20 ||
     f.temperature[i] < 4 ||
     f.temperature[i] > 45
   )
@@ -122,6 +143,7 @@ export function germinate(s: Simulation, i: number) {
   if (s.plants.some((p) => Math.abs(p.x - x) < 4 && Math.abs(p.y - y) < 4))
     return false;
   s.put(i, E.Plant);
+  f.age[i] = 65535;
   s.onDiscover(E.Plant);
   s.plants.push({
     id: s.nextEntityId++,
@@ -144,7 +166,40 @@ function growPlants(s: Simulation) {
   for (const p of s.plants) {
     p.age += 15;
     const root = (p.y + 1) * w + p.x;
-    const rooted = material[s.cells[root]].soil;
+    const rooted = rootable(s.cells[root]);
+    // Roots draw from a small soil volume instead of exhausting one pixel.
+    if (rooted)
+      for (let dy = 0; dy <= 3; dy++)
+        for (let dx = -3; dx <= 3; dx++) {
+          const x = p.x + dx,
+            y = p.y + 1 + dy,
+            id = s.get(x, y);
+          if (id < 0 || !rootable(id)) continue;
+          const j = y * w + x;
+          if (j === root) continue;
+          if (f.moisture[root] < 60 && f.moisture[j] > f.moisture[root]) {
+            const amount = Math.min(3, f.moisture[j] - f.moisture[root]);
+            for (const key of [
+              "salinity",
+              "pollution",
+              "acidity",
+              "radiation",
+            ] as const) {
+              const transfer = Math.min(
+                Math.floor((f[key][j] * amount) / f.moisture[j]),
+                (key === "salinity" ? 65535 : 100) - f[key][root],
+              );
+              f[key][root] += transfer;
+              f[key][j] -= transfer;
+            }
+            f.moisture[root] += amount;
+            f.moisture[j] -= amount;
+          }
+          if (f.fertility[root] < 60 && f.fertility[j] > f.fertility[root]) {
+            f.fertility[root]++;
+            f.fertility[j]--;
+          }
+        }
     const stem = s.cells[p.y * w + p.x];
     const healthy =
       rooted &&
@@ -174,6 +229,7 @@ function growPlants(s: Simulation) {
       if (s.cells[i] === E.Plant) {
         f.vitality[i] = p.health;
         f.moisture[i] = f.moisture[root];
+        f.age[i] = 65535;
       }
     if (!healthy) continue;
     if (p.age % 60 === 0) f.moisture[root] = Math.max(0, f.moisture[root] - 1);
@@ -184,6 +240,7 @@ function growPlants(s: Simulation) {
     const top = topY * w + p.x;
     if (s.cells[top] !== 0 && s.cells[top] !== E.Plant) continue;
     s.put(top, p.height > 3 ? E.Wood : E.Plant);
+    f.age[top] = 65535;
     p.parts.push(top);
     if (p.height === 4) {
       for (let y = p.y - 3; y <= p.y; y++) {
@@ -200,6 +257,7 @@ function growPlants(s: Simulation) {
         if (s.get(px, py) !== 0) continue;
         const i = py * w + px;
         s.put(i, E.Plant);
+        f.age[i] = 65535;
         f.moisture[i] = f.moisture[root];
         p.parts.push(i);
       }
@@ -454,7 +512,7 @@ export function stepLife(s: Simulation) {
         (s.cells[i] === E.Plant &&
           s.fields.age[i] !== 65535 &&
           i + s.width < s.cells.length &&
-          material[s.cells[i + s.width]].soil)
+          rootable(s.cells[i + s.width]))
       )
         germinate(s, i);
     growPlants(s);

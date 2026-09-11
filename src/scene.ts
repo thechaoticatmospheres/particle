@@ -143,14 +143,7 @@ export class WorldScene extends Phaser.Scene {
           );
         for (let dy = -c.brush; dy <= c.brush; dy++)
           for (let dx = -c.brush; dx <= c.brush; dx++)
-            if (id === 0 || this.sim.get(x + dx, y + dy) === 0) {
-              this.sim.set(x + dx, y + dy, id);
-              if (id && this.sim.get(x + dx, y + dy) >= 0)
-                this.sim.fields.assign(
-                  (y + dy) * this.sim.width + x + dx,
-                  c.variant,
-                );
-            }
+            this.sim.deposit(x + dx, y + dy, id, c.variant);
       } else this.sim.paint(x, y, id, c.brush, false, c.variant);
     }
     this.last = point;

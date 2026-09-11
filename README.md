@@ -33,7 +33,7 @@ Open the local URL from Vite. `npm run preview` serves the production build.
 1. After discovering all 203 items, choose **World → Living lab**. The left aquarium contains freshwater fish; the right contains saltwater fish. Seeds and humans occupy the ground between them.
 2. Select the **Salinity** overlay to see the difference. Use **Inspect (I)** on particles and creatures to read their conditions and needs.
 3. Drop **Salt** into water. It dissolves and spreads as a property of Water. Saltwater fish need salinity 12–70; freshwater fish need 0–9; humans drink safe water at 0–7.
-4. Place **Seed** on moist **Soil**. Seedlings grow into branching, woody plants and eventually release seeds. Try fresh water, fertilizer, salt, or fire near their roots.
+4. Drop **Seed** or **Plant** onto moist **Soil** or watered **Sand**. Inspect a plant to see what it needs. Seedlings grow into branching, woody plants and eventually release seeds. Try fresh water, fertilizer, salt, or fire near their roots.
 5. Unlocked **Human**, **Freshwater fish**, and **Saltwater fish** appear in the default **All** palette alongside materials. Select and click once per creature, or drag one into the world. Fish must be placed in water.
 6. Drag **Salt** and **Water** into **Combine**. The second drop immediately produces **Salty water**. Drag the result to place a blob, click it to paint, or combine it again. Existing modifiers carry forward when the resulting base material stays the same. Selecting a base material resets its properties.
 
@@ -43,6 +43,7 @@ The **Field guide** explains the environmental systems and lists all 20 modifier
 
 - Click/drag: paint. Right-click the world or **E**: erase particles and creatures. **B**: brush. **I**: inspect.
 - Drag palette items into the canvas to place a circular blob using the brush size (minimum radius 5). Drag two items into Combine for an automatic result. Right-click a palette item or combination result to add it to Combine immediately. Focus a palette item and press **C** for a keyboard alternative. **Escape** cancels a drag; dropping outside a target does nothing.
+- Click the lock icon beside a combiner ingredient to keep it in place. While pinned, left-click other palette items to try them immediately; click the lock again to resume painting. Clear resets both inputs and the pin.
 - Scroll or **[ / ]**: brush size. Toolbar: round/square brush, undo, pause, single tick, speed, clear, and fullscreen.
 - **Space**: pause/resume. Painting, adding life, and inspecting still work while paused.
 - Overlay selector: natural colors, temperature, salinity, moisture, pollution, fertility, or electricity.

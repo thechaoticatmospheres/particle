@@ -163,11 +163,37 @@ export class Simulation {
           cy = Math.round(y + dy),
           v = this.get(cx, cy);
         if (v < 0) continue;
-        if (id === 0 || replace || v === 0) {
-          this.set(cx, cy, id);
-          if (id) this.fields.assign(cy * this.width + cx, properties);
-        }
+        this.deposit(cx, cy, id, properties, replace);
       }
+  }
+  /** Inject into fluids as well as air, without overwriting solid terrain. */
+  deposit(
+    x: number,
+    y: number,
+    id: number,
+    properties: ModifierValues = {},
+    replace = false,
+  ) {
+    const previous = this.get(x, y);
+    if (previous < 0) return false;
+    const state = byId.get(previous)?.state;
+    if (
+      id !== 0 &&
+      !replace &&
+      previous !== 0 &&
+      (previous === id ||
+        (state !== "liquid" && state !== "gas" && state !== "energy"))
+    )
+      return false;
+    const i = y * this.width + x;
+    // Preserve displaced fluid when there is an adjacent opening.
+    if (previous && id && !replace) {
+      const empty = this.emptyNeighbor(i);
+      if (empty >= 0) this.swap(i, empty);
+    }
+    this.put(i, id);
+    if (id) this.fields.assign(i, properties);
+    return true;
   }
   swap(i: number, j: number) {
     this.fields.swap(i, j);
@@ -235,8 +261,45 @@ export class Simulation {
       for (let dx = -radius; dx <= radius; dx++)
         if (dx * dx + dy * dy < radius * radius) {
           const v = this.get(x + dx, y + dy);
-          if (v < 0 || material[v].blastResistance >= 1) continue;
-          this.set(x + dx, y + dy, this.random() < 0.55 ? E.Fire : 0);
+          if (v < 0) continue;
+          const power = 1 - Math.hypot(dx, dy) / radius,
+            i = (y + dy) * this.width + x + dx,
+            t = material[v];
+          if (v) {
+            this.fields.temperature[i] = Math.min(
+              2000,
+              this.fields.temperature[i] + Math.round(600 * power),
+            );
+            this.fields.pressure[i] = Math.min(
+              100,
+              this.fields.pressure[i] + Math.round(90 * power),
+            );
+          }
+          if (t.blastResistance >= power) continue;
+          if (
+            v &&
+            (t.explosive || v === E.Gunpowder) &&
+            dx * dx + dy * dy > 4
+          ) {
+            // Prime nearby charges for the next tick rather than silently deleting them.
+            this.fields.temperature[i] = Math.max(
+              this.fields.temperature[i],
+              t.ignition + 80,
+            );
+            continue;
+          }
+          if (t.aqueous) {
+            this.put(i, E.Steam);
+            this.fields.temperature[i] = 140;
+            this.fields.pressure[i] = 75;
+          } else if (
+            v &&
+            byId.get(v)?.state === "solid" &&
+            this.random() < 0.45
+          ) {
+            this.put(i, E.Gravel);
+            this.fields.temperature[i] = 180;
+          } else this.set(x + dx, y + dy, this.random() < 0.55 ? E.Fire : 0);
         }
   }
   step() {
@@ -254,7 +317,12 @@ export class Simulation {
           id = this.cells[i];
         if (!id || this.moved[i] === this.tick) continue;
         const e = byId.get(id)!;
-        if (id === E.Fire || id === E.Lava || id === E.Spark) {
+        if (
+          id === E.Fire ||
+          id === E.Lava ||
+          id === E.Spark ||
+          material[id].dynamics?.waterReaction
+        ) {
           for (const j of this.neighbors(i)) {
             if (this.cells[j]) contact(this, i, j);
             if (this.cells[i] !== id) break;
@@ -276,8 +344,16 @@ export class Simulation {
           }
         }
         const dir = this.random() < 0.5 ? -1 : 1;
+        const unrootedPlant = id === E.Plant && this.fields.age[i] !== 65535;
+        if (
+          unrootedPlant &&
+          (material[this.get(x, y + 1)]?.soil ||
+            material[this.get(x, y + 1)]?.rootable)
+        )
+          continue;
         if (
           e.state === "solid" &&
+          !unrootedPlant &&
           !(id === E.Metal && this.fields.corrosion[i] >= 85)
         )
           continue;
@@ -565,6 +641,10 @@ export class Simulation {
     this.moved.fill(0);
     this.creatures = living.creatures;
     this.plants = living.plants;
+    // Anchor older saved canopies before the first movement tick.
+    for (const p of this.plants)
+      for (const i of p.parts)
+        if (this.cells[i] === E.Plant) this.fields.age[i] = 65535;
     this.nextEntityId = nextId;
     this.deaths = deaths;
     this.milestones = new Set(milestones);

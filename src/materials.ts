@@ -49,6 +49,7 @@ export interface MaterialTraits {
   blastResistance: number;
   organic: boolean;
   soil: boolean;
+  rootable?: boolean;
   aqueous: boolean;
   soluble: "salt" | "nutrients" | null;
   defaultTemperature: number;
@@ -93,7 +94,7 @@ const defaults: MaterialTraits = {
   defaultFertility: 0,
 };
 const overrides: Record<number, Partial<MaterialTraits>> = {
-  [E.Sand]: { absorbency: 30, acidResistance: 0.7 },
+  [E.Sand]: { absorbency: 30, acidResistance: 0.7, rootable: true },
   [E.Water]: {
     conductivity: 0.3,
     electrical: 0.15,
